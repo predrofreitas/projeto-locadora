@@ -4,14 +4,16 @@ using Locadora.Dados;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Locadora.Dados.Migrations
 {
     [DbContext(typeof(LocadoraContext))]
-    partial class LocadoraContextModelSnapshot : ModelSnapshot
+    [Migration("20210803183018_AlugueisFK")]
+    partial class AlugueisFK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,33 +40,16 @@ namespace Locadora.Dados.Migrations
                     b.Property<DateTime>("DataPedido")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClienteId");
-
-                    b.ToTable("Aluguel");
-                });
-
-            modelBuilder.Entity("Locadora.Dominio.Entidades.AluguelItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("AluguelId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("MidiaId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AluguelId");
+                    b.HasIndex("ClienteId");
 
                     b.HasIndex("MidiaId");
 
-                    b.ToTable("AluguelItem");
+                    b.ToTable("Aluguel");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Cliente", b =>
@@ -76,15 +61,6 @@ namespace Locadora.Dados.Migrations
 
                     b.Property<bool>("Ativo")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Bairro")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Cep")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Cidade")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Cpf")
                         .IsRequired()
@@ -98,14 +74,35 @@ namespace Locadora.Dados.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Estado")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(200)
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cliente");
+                });
+
+            modelBuilder.Entity("Locadora.Dominio.Entidades.Endereco", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Bairro")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Cep")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Cidade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Estado")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Numero")
                         .HasColumnType("int");
@@ -115,7 +112,7 @@ namespace Locadora.Dados.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cliente");
+                    b.ToTable("Endereco");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Estoque", b =>
@@ -168,22 +165,11 @@ namespace Locadora.Dados.Migrations
                         .WithMany("Alugueis")
                         .HasForeignKey("ClienteId");
 
-                    b.Navigation("Cliente");
-                });
-
-            modelBuilder.Entity("Locadora.Dominio.Entidades.AluguelItem", b =>
-                {
-                    b.HasOne("Locadora.Dominio.Entidades.Aluguel", "Aluguel")
-                        .WithMany()
-                        .HasForeignKey("AluguelId");
-
-                    b.HasOne("Locadora.Dominio.Entidades.Midia", "Midia")
-                        .WithMany("AluguelItem")
+                    b.HasOne("Locadora.Dominio.Entidades.Midia", null)
+                        .WithMany("Aluguel")
                         .HasForeignKey("MidiaId");
 
-                    b.Navigation("Aluguel");
-
-                    b.Navigation("Midia");
+                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Estoque", b =>
@@ -202,7 +188,7 @@ namespace Locadora.Dados.Migrations
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Midia", b =>
                 {
-                    b.Navigation("AluguelItem");
+                    b.Navigation("Aluguel");
                 });
 #pragma warning restore 612, 618
         }

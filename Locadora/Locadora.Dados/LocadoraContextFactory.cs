@@ -8,7 +8,8 @@ namespace Locadora.Dados
         public LocadoraContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<LocadoraContext>();
-            optionsBuilder.UseSqlServer("Password=Projeto@Locadora#2021;Persist Security Info=True;User ID=sa;Initial Catalog=locadoradb;Data Source=localhost");
+           // optionsBuilder.UseSqlServer("Password=Projeto@Locadora#2021;Persist Security Info=True;User ID=sa;Initial Catalog=locadoradb;Data Source=localhost");
+            optionsBuilder.UseSqlServer("Password=abc,12345678;Persist Security Info=True;User ID=sa;Initial Catalog=locadoradb;Data Source=localhost");
 
             return new LocadoraContext(optionsBuilder.Options);
         }

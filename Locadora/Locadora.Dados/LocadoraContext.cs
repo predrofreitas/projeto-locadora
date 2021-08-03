@@ -9,7 +9,6 @@ namespace Locadora.Dados
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Aluguel> Alugueis { get; set; }
         public DbSet<Midia> Midias { get; set; }
-        public DbSet<Endereco> Enderecos { get; set; }
         public DbSet<Estoque> Estoques { get; set; }
         public LocadoraContext(DbContextOptions<LocadoraContext> options) 
             : base(options)
@@ -20,7 +19,6 @@ namespace Locadora.Dados
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Cliente>().ToTable("Cliente");
-            modelBuilder.Entity<Cliente>().Ignore(x => x.Endereco);
             modelBuilder.Entity<Cliente>().Property(c => c.Nome)
                 .HasMaxLength(200)
                 .IsRequired()
@@ -31,7 +29,6 @@ namespace Locadora.Dados
                 .IsUnicode(false);
 
             modelBuilder.Entity<Aluguel>().ToTable("Aluguel");
-            modelBuilder.Entity<Endereco>().ToTable("Endereco");
             modelBuilder.Entity<Midia>().ToTable("Midia");
             modelBuilder.Entity<Estoque>().ToTable("Estoque");
         }
