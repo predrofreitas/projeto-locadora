@@ -18,14 +18,26 @@ namespace Locadora.Dados.Repositorios
             _locadoraContext.SaveChanges();
         }
 
-        public Cliente ObterPorId(int id)
+        public void Remover(Cliente cliente)
+        {
+            _locadoraContext.Remove(cliente);
+            _locadoraContext.SaveChanges();
+        }
+
+        public void Atualizar(Cliente cliente)
+        {
+            _locadoraContext.Update(cliente);
+            _locadoraContext.SaveChanges();
+        }
+
+        public Cliente BuscarPorId(int id)
         {
             var cliente = _locadoraContext.Clientes.FirstOrDefault(x => x.Id == 1);
 
             return cliente;
         }
 
-        public Cliente ObterPorNome(string nome)
+        public Cliente BuscarPorNome(string nome)
         {
             var clientes = _locadoraContext.Clientes.FirstOrDefault(x => x.Nome == nome);
 

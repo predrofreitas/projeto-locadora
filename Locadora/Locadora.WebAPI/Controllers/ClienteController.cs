@@ -1,6 +1,7 @@
-﻿using Locadora.Dominio.Entidades;
+﻿using Locadora.Dados;
 using Locadora.Dominio.Interfaces;
 using Locadora.WebAPI.Dtos;
+using Locadora.WebAPI.Handlers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,17 +14,15 @@ namespace Locadora.WebAPI.Controllers
     {
         private readonly ILogger<ClienteController> _logger;
         private readonly IRepositorioCliente _repositorioCliente;
+        private readonly LocadoraContext _locadoraContext;
 
-        public ClienteController(ILogger<ClienteController> logger, IRepositorioCliente repositorioCliente)
+        public ClienteController(ILogger<ClienteController> logger,
+            IRepositorioCliente repositorioCliente,
+            LocadoraContext locadoraContext)
         {
             _logger = logger;
+            _locadoraContext = locadoraContext;
             _repositorioCliente = repositorioCliente;
-        }
-
-        [HttpGet]
-        public IActionResult Get()
-        {
-            return Ok();
         }
 
         [HttpPost]
@@ -31,21 +30,33 @@ namespace Locadora.WebAPI.Controllers
         {
             try
             {
-                var cliente = new Cliente();
-                cliente.Nome = clienteDto.Nome;
-                cliente.DataNascimento = clienteDto.DataNascimento;
-                cliente.Cpf = clienteDto.Cpf;
-
-                _repositorioCliente.Salvar(cliente);
-
-                return CreatedAtAction(nameof(CriarCliente), cliente.Id);
+                var cadastrarCliente = new CadastrarClienteHandler(_locadoraContext, _repositorioCliente);
+                cadastrarCliente.Criar(clienteDto);
+                return CreatedAtAction(nameof(CriarCliente), Guid.NewGuid());
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, ex);
                 return StatusCode(500, "Erro ao criar cliente");
             }
+        }
 
+        [HttpDelete]
+        [Route("remover")]
+        public IActionResult Remover(int id)
+        {
+            try
+            {
+                var cadastrarCliente = new CadastrarClienteHandler(_locadoraContext, _repositorioCliente);
+                cadastrarCliente.Remover(id);
+
+                return Ok("Cliente deletado com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(500, "Erro ao criar cliente");
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Locadora.Dados.Repositorios;
 using Locadora.Dominio.Interfaces;
+using System;
 
 namespace Locadora.WebAPI
 {
@@ -34,7 +35,10 @@ namespace Locadora.WebAPI
             {
                 options.UseSqlServer(Configuration.GetConnectionString("LocadoraContext"), sqlServerOptionsAction: sqlOptions =>
                {
-                   sqlOptions.EnableRetryOnFailure();
+                   sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 10,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null);
                });
             });
 

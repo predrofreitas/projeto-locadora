@@ -1,7 +1,8 @@
 ﻿using Locadora.Dados;
 using Locadora.Dominio.Entidades;
 using Locadora.Dominio.Interfaces;
-using System;
+using Locadora.WebAPI.Dtos;
+using System.Threading.Tasks;
 
 namespace Locadora.WebAPI.Handlers
 {
@@ -16,21 +17,50 @@ namespace Locadora.WebAPI.Handlers
             _repositorioCliente = repositorioCliente;
         }
 
-        public void Criar(string nome, string cpf, DateTime dataNascimento)
+        public async Task Criar(ClienteDto clienteDto)
         {
-            var cliente = new Cliente
-            {
-                Nome = nome,
-                DataNascimento = dataNascimento,
-                Cpf = cpf
-            };
+            var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false);
 
-            using (var transacao = _locadoraContext.Database.BeginTransaction())
+            await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
             {
                 _repositorioCliente.Salvar(cliente);
-                _locadoraContext.SaveChanges();
-                transacao.Commit();
-            }
+
+                await _locadoraContext.SaveChangesAsync();
+            });
+        }
+
+        public async Task Atualizar(ClienteDto clienteDto)
+        {
+            var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false);
+
+            await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
+            {
+                _repositorioCliente.Atualizar(cliente);
+
+                await _locadoraContext.SaveChangesAsync();
+            });
+        }
+
+        public async Task Remover(int id)
+        {
+            var cliente = _repositorioCliente.BuscarPorId(id);
+
+            await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
+            {
+                _repositorioCliente.Remover(cliente);
+
+                await _locadoraContext.SaveChangesAsync();
+            });
+        }
+
+        public Cliente BuscarPorId(int id)
+        {
+            return _repositorioCliente.BuscarPorId(id);
+        }
+
+        public Cliente BuscarPorNome(string nome)
+        {
+            return _repositorioCliente.BuscarPorNome(nome);
         }
     }
 }

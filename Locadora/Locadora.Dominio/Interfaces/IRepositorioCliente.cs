@@ -5,7 +5,9 @@ namespace Locadora.Dominio.Interfaces
     public interface IRepositorioCliente
     {
         void Salvar(Cliente cliente);
-        Cliente ObterPorId(int id);
-        Cliente ObterPorNome(string nome);
+        void Remover(Cliente cliente);
+        void Atualizar(Cliente cliente);
+        Cliente BuscarPorId(int id);
+        Cliente BuscarPorNome(string nome);
     }
 }

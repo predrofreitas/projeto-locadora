@@ -12,12 +12,17 @@ namespace Locadora.Dominio.Entidades
         public string Cpf { get; set; }
         public string Email { get; set; }
         public bool Ativo { get; set; }
-        public readonly List<Aluguel> _alugueis;
+        private readonly List<Aluguel> _alugueis;
         public IReadOnlyCollection<Aluguel> Alugueis => _alugueis;
-
-        public Cliente()
+        public Endereco Endereco { get; set; }
+        public Cliente(string nome, DateTime dataNascimento, string cpf, string email, bool ativo)
         {
-            List<Aluguel> _alugueis = new List<Aluguel>();
+            Nome = nome;
+            DataNascimento = dataNascimento;
+            Cpf = cpf;
+            Email = email;
+            Ativo = ativo;
+            _alugueis = new List<Aluguel>();
         }
 
         public bool PossuiPendencias()
