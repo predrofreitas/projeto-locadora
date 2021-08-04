@@ -1,4 +1,5 @@
 ﻿
+using System;
 using Locadora.Comuns.Enums;
 
 namespace Locadora.Dominio.Entidades
@@ -12,13 +13,8 @@ namespace Locadora.Dominio.Entidades
         public string Categoria { get; set; }
         public float Preco { get; set; }
 
-        public Item(string nome, string descricao, TipoMidia tipoMidia, string categoria, float preco)
+        public Item()
         {
-            Nome = nome;
-            Descricao = descricao;
-            TipoMidia = tipoMidia;
-            Categoria = categoria;
-            Preco = preco;
         }
     }
 }
