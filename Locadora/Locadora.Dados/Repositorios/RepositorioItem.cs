@@ -30,11 +30,11 @@ namespace Locadora.Dados.Repositorios
             _locadoraContext.SaveChanges();
         }
 
-        public List<Item> BuscarPorCategoria(string categoria)
+        public IEnumerable<Item> BuscarPorCategoria(string categoria)
         {
             var midias = _locadoraContext.Itens.Where(x => x.Categoria == categoria);
 
-            return midias.ToList();
+            return midias;
         }
 
         public Item BuscarPorId(int id)
