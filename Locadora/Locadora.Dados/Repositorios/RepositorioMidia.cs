@@ -13,26 +13,26 @@ namespace Locadora.Dados.Repositorios
         {
             _locadoraContext = locadoraContext;
         }
-        public void Salvar(Midia midia)
+        public void Salvar(Item midia)
         {
             _locadoraContext.Add(midia);
         }
 
-        public List<Midia> ObterPorCategoria(string categoria)
+        public List<Item> ObterPorCategoria(string categoria)
         {
             var midias = _locadoraContext.Midias.Where(x => x.Categoria == categoria);
 
             return midias.ToList();
         }
 
-        public Midia ObterPorId(int id)
+        public Item ObterPorId(int id)
         {
             var midia = _locadoraContext.Midias.FirstOrDefault(x => x.Id == id);
 
             return midia;
         }
 
-        public Midia ObterPorNome(string nome)
+        public Item ObterPorNome(string nome)
         {
             var midia = _locadoraContext.Midias.FirstOrDefault(x => x.Nome == nome);
 
