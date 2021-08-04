@@ -3,8 +3,6 @@ using Locadora.Dados;
 using Locadora.Dominio.Entidades;
 using Locadora.Dominio.Interfaces;
 using RabbitMQ.Client;
-using System.Text;
-using System.Text.Json;
 
 namespace Locadora.WebAPI.Handlers
 {
@@ -23,53 +21,45 @@ namespace Locadora.WebAPI.Handlers
             _rabbitConnection = rabbitConnection;
         }
 
-        public void Criar(ClienteDto clienteDto)
+        public int Criar(ClienteDto clienteDto)
         {
-            var cliente = new Cliente()
-            {
-                Nome = clienteDto.Nome,
-                DataNascimento = clienteDto.DataNascimento,
-                Cpf = clienteDto.Cpf,
-                Email = clienteDto.Email
-            };
+            var cliente = Map(clienteDto);
+            int id = 0;
 
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
-                _repositorioCliente.Salvar(cliente);
+                id =_repositorioCliente.Salvar(cliente);
                 _locadoraContext.SaveChanges();
                 transacao.Commit();
             }
 
-            using (var canal = _rabbitConnection.CreateModel())
-            {
-                canal.QueueDeclare(queue: "qu.solicitacao.cadastro.cliente",
-                                    durable: false,
-                                    exclusive: false,
-                                    autoDelete: false,
-                                    arguments: null);
+            return id;
+
+            //using (var canal = _rabbitConnection.CreateModel())
+            //{
+            //    canal.QueueDeclare(queue: "qu.solicitacao.cadastro.cliente",
+            //                        durable: false,
+            //                        exclusive: false,
+            //                        autoDelete: false,
+            //                        arguments: null);
 
 
-                string mensagem = JsonSerializer.Serialize(clienteDto);
-                var corpo = Encoding.UTF8.GetBytes(mensagem);
-                canal.BasicPublish(exchange: "",
-                                    routingKey: "qu.solicitacao.cadastro.cliente",
-                                    basicProperties: null,
-                                    body: corpo);
-            }
+            //    string mensagem = JsonSerializer.Serialize(clienteDto);
+            //    var corpo = Encoding.UTF8.GetBytes(mensagem);
+            //    canal.BasicPublish(exchange: "",
+            //                        routingKey: "qu.solicitacao.cadastro.cliente",
+            //                        basicProperties: null,
+            //                        body: corpo);
+            //}
         }
 
-        public void Atualizar(ClienteDto clienteDto)
+        public void Atualizar(ClienteDto clienteDto, int id)
         {
-            var cliente = new Cliente()
-            {
-                Nome = clienteDto.Nome,
-                DataNascimento = clienteDto.DataNascimento,
-                Cpf = clienteDto.Cpf,
-                Email = clienteDto.Email
-            };
+            var cliente = Map(clienteDto);
 
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
+                cliente.Id = id;
                 _repositorioCliente.Atualizar(cliente);
                 _locadoraContext.SaveChanges();
                 transacao.Commit();
@@ -88,14 +78,64 @@ namespace Locadora.WebAPI.Handlers
             }
         }
 
-        public Cliente BuscarPorId(int id)
+        public ClienteDto BuscarPorId(int id)
         {
-            return _repositorioCliente.BuscarPorId(id);
+            var cliente = _repositorioCliente.BuscarPorId(id);
+            if (cliente == null)
+                return null;
+
+            var clienteDto = Map(cliente);
+            return clienteDto;
         }
 
-        public Cliente BuscarPorNome(string nome)
+        public ClienteDto BuscarPorNome(string nome)
         {
-            return _repositorioCliente.BuscarPorNome(nome);
+            var cliente = _repositorioCliente.BuscarPorNome(nome);
+            if (cliente == null)
+                return null;
+
+            var clienteDto = Map(cliente);
+            return clienteDto;
+        }
+
+        private Cliente Map(ClienteDto clienteDto)
+        {
+            var cliente = new Cliente()
+            {
+                Nome = clienteDto.Nome,
+                DataNascimento = clienteDto.DataNascimento,
+                Cpf = clienteDto.Cpf,
+                Email = clienteDto.Email,
+                Ativo = clienteDto.Ativo,
+                Rua = clienteDto.Rua,
+                Numero = clienteDto.Numero,
+                Bairro = clienteDto.Bairro,
+                Cep = clienteDto.Cep,
+                Cidade = clienteDto.Cidade,
+                Estado = clienteDto.Estado,
+            };
+
+            return cliente;
+        }
+
+        private ClienteDto Map(Cliente cliente)
+        {
+            var clienteDto = new ClienteDto()
+            {
+                Nome = cliente.Nome,
+                DataNascimento = cliente.DataNascimento,
+                Cpf = cliente.Cpf,
+                Email = cliente.Email,
+                Ativo = cliente.Ativo,
+                Rua = cliente.Rua,
+                Numero = cliente.Numero,
+                Bairro = cliente.Bairro,
+                Cep = cliente.Cep,
+                Cidade = cliente.Cidade,
+                Estado = cliente.Estado,
+            };
+
+            return clienteDto;
         }
     }
 }

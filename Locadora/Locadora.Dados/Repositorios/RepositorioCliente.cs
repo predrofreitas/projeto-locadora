@@ -12,10 +12,12 @@ namespace Locadora.Dados.Repositorios
             _locadoraContext = locadoraContext;
         }
 
-        public void Salvar(Cliente cliente)
+        public int Salvar(Cliente cliente)
         {
             _locadoraContext.Add(cliente);
             _locadoraContext.SaveChanges();
+
+            return cliente.Id;
         }
 
         public void Remover(Cliente cliente)
@@ -26,13 +28,14 @@ namespace Locadora.Dados.Repositorios
 
         public void Atualizar(Cliente cliente)
         {
+
             _locadoraContext.Update(cliente);
             _locadoraContext.SaveChanges();
         }
 
         public Cliente BuscarPorId(int id)
         {
-            var cliente = _locadoraContext.Clientes.FirstOrDefault(x => x.Id == 1);
+            var cliente = _locadoraContext.Clientes.FirstOrDefault(x => x.Id == id);
 
             return cliente;
         }
