@@ -18,21 +18,33 @@ namespace Locadora.Dados.Repositorios
             _locadoraContext.Add(item);
         }
 
-        public List<Item> ObterPorCategoria(string categoria)
+        public void Remover(Item item)
+        {
+            _locadoraContext.Remove(item);
+            _locadoraContext.SaveChanges();
+        }
+
+        public void Atualizar(Item item)
+        {
+            _locadoraContext.Update(item);
+            _locadoraContext.SaveChanges();
+        }
+
+        public List<Item> BuscarPorCategoria(string categoria)
         {
             var midias = _locadoraContext.Itens.Where(x => x.Categoria == categoria);
 
             return midias.ToList();
         }
 
-        public Item ObterPorId(int id)
+        public Item BuscarPorId(int id)
         {
             var midia = _locadoraContext.Itens.FirstOrDefault(x => x.Id == id);
 
             return midia;
         }
 
-        public Item ObterPorNome(string nome)
+        public Item BuscarPorNome(string nome)
         {
             var midia = _locadoraContext.Itens.FirstOrDefault(x => x.Nome == nome);
 

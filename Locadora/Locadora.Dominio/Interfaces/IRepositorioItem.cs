@@ -5,9 +5,11 @@ namespace Locadora.Dominio.Interfaces
 {
     public interface IRepositorioItem
     {
-        void Salvar(Item midia);
-        Item ObterPorId(int id);
-        Item ObterPorNome(string nome);
-        List<Item> ObterPorCategoria(string categoria);
+        void Salvar(Item item);
+        void Remover(Item item);
+        void Atualizar(Item item);
+        Item BuscarPorId(int id);
+        Item BuscarPorNome(string nome);
+        List<Item> BuscarPorCategoria(string categoria);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Locadora.Comuns.Enums;
+using Locadora.Comuns.Enums;
 using System.Collections.Generic;
 
 namespace Locadora.Comuns.Dtos
