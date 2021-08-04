@@ -5,7 +5,7 @@ namespace Locadora.Dominio.Entidades
     public class Estoque
     {
         public int Id { get; set; }
-        public Item Midia { get; set; }
+        public Item Item { get; set; }
         public int Quantidade { get; set; }
 
         public Estoque()

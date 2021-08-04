@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Locadora.Dados.Migrations
 {
     [DbContext(typeof(LocadoraContext))]
-    [Migration("20210803190349_EnderecoNoCliente")]
-    partial class EnderecoNoCliente
+    [Migration("20210804052129_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,16 +40,33 @@ namespace Locadora.Dados.Migrations
                     b.Property<DateTime>("DataPedido")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("MidiaId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClienteId");
 
-                    b.HasIndex("MidiaId");
-
                     b.ToTable("Aluguel");
+                });
+
+            modelBuilder.Entity("Locadora.Dominio.Entidades.AluguelItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AluguelId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AluguelId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("AluguelItem");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Cliente", b =>
@@ -110,7 +127,7 @@ namespace Locadora.Dados.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("MidiaId")
+                    b.Property<int?>("ItemId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantidade")
@@ -118,12 +135,12 @@ namespace Locadora.Dados.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MidiaId");
+                    b.HasIndex("ItemId");
 
                     b.ToTable("Estoque");
                 });
 
-            modelBuilder.Entity("Locadora.Dominio.Entidades.Midia", b =>
+            modelBuilder.Entity("Locadora.Dominio.Entidades.Item", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -142,9 +159,12 @@ namespace Locadora.Dados.Migrations
                     b.Property<float>("Preco")
                         .HasColumnType("real");
 
+                    b.Property<int>("TipoMidia")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Midia");
+                    b.ToTable("Item");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Aluguel", b =>
@@ -153,30 +173,41 @@ namespace Locadora.Dados.Migrations
                         .WithMany("Alugueis")
                         .HasForeignKey("ClienteId");
 
-                    b.HasOne("Locadora.Dominio.Entidades.Midia", null)
-                        .WithMany("Aluguel")
-                        .HasForeignKey("MidiaId");
-
                     b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("Locadora.Dominio.Entidades.AluguelItem", b =>
+                {
+                    b.HasOne("Locadora.Dominio.Entidades.Aluguel", "Aluguel")
+                        .WithMany("AluguelItens")
+                        .HasForeignKey("AluguelId");
+
+                    b.HasOne("Locadora.Dominio.Entidades.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.Navigation("Aluguel");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Estoque", b =>
                 {
-                    b.HasOne("Locadora.Dominio.Entidades.Midia", "Midia")
+                    b.HasOne("Locadora.Dominio.Entidades.Item", "Item")
                         .WithMany()
-                        .HasForeignKey("MidiaId");
+                        .HasForeignKey("ItemId");
 
-                    b.Navigation("Midia");
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Locadora.Dominio.Entidades.Aluguel", b =>
+                {
+                    b.Navigation("AluguelItens");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Cliente", b =>
                 {
                     b.Navigation("Alugueis");
-                });
-
-            modelBuilder.Entity("Locadora.Dominio.Entidades.Midia", b =>
-                {
-                    b.Navigation("Aluguel");
                 });
 #pragma warning restore 612, 618
         }
