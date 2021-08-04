@@ -7,8 +7,9 @@ namespace Locadora.WebAPI.Dtos
     {
         public int Id { get; set; }
         public bool Aberto { get; set; } = true;
-        public List<MidiaDto> Midias { get; set; }
         public DateTime DataPedido { get; set; }
         public DateTime DataDevolucao { get; set; }
+        public AluguelItemDto AluguelItem { get; set; }
+        public readonly List<AluguelItemDto> aluguelItems;
     }
 }
