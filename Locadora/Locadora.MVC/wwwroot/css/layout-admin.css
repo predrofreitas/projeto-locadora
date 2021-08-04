@@ -1,0 +1,81 @@
+ .layout-admin{
+     display: grid;
+     width: 100%;
+     height: 98vh;
+     grid-template: "header header" 80px 
+                    "menu-lateral corpo " 1fr / 200px 1fr;
+ }
+
+ .header-layout{
+     grid-area: header;
+     background-image: linear-gradient(darkblue  40% , rgb(1, 192, 255) );
+     color: white;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 0 20px;
+ }
+ .header-layout span{
+     display: flex;
+     font-size: 40px;
+     align-items: center;
+ }
+ .header-layout span  * {
+    margin:10px;
+ }
+
+ .menu-lateral{ 
+     grid-area: menu-lateral;
+     background-color: #333;
+     padding: 5px;
+     width: 100%;
+     justify-content: center;
+     align-items: center;
+ }
+ .corpo{
+     display: flex;
+     flex-direction: column;
+     grid-area: corpo;
+     align-items: center;
+     padding: 10px;
+     width: 100%;
+     justify-items: center;
+     height: 100%;
+     min-height: 300px;
+ }
+
+ .corpo header{
+     border-bottom: solid 1px #333;
+     width: 100%;
+     margin-bottom: 10px;
+     padding:  0 10px;
+ }
+
+ .corpo .lista-de-itens{
+    margin: 10px;
+ }
+
+ .form-cadatro-cliente{
+     width: auto;
+ }
+
+ .layout-admin  fieldset{
+     color: black;
+     border: solid 1px grey;
+     padding: 10px;
+     margin: 10px;
+     border-radius: 10px;
+     margin-left: 10px;
+
+ }
+
+ .editar{
+     color:green;
+ }
+ .deletar{
+     color:red;
+ }
+
+
+
+ 
