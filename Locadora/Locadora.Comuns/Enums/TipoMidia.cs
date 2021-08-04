@@ -1,4 +1,4 @@
-﻿namespace Locadora.Dominio.Enums
+﻿namespace Locadora.Comuns.Enums
 {
     public enum TipoMidia
     {

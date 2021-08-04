@@ -1,12 +1,10 @@
-﻿using Locadora.Dados;
+﻿using Locadora.Comuns.Dtos;
+using Locadora.Dados;
 using Locadora.Dominio.Entidades;
 using Locadora.Dominio.Interfaces;
-using Locadora.WebAPI.Dtos;
 using RabbitMQ.Client;
-using System;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Locadora.WebAPI.Handlers
 {

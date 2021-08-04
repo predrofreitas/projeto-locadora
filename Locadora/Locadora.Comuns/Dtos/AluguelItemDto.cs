@@ -1,4 +1,4 @@
-﻿namespace Locadora.WebAPI.Dtos
+﻿namespace Locadora.Comuns.Dtos
 {
     public class AluguelItemDto
     {

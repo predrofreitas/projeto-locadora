@@ -1,4 +1,5 @@
-﻿using Locadora.Dominio.Enums;
+﻿
+using Locadora.Comuns.Enums;
 
 namespace Locadora.Dominio.Entidades
 {

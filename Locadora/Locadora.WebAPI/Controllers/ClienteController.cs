@@ -1,6 +1,6 @@
-﻿using Locadora.Dados;
+﻿using Locadora.Comuns.Dtos;
+using Locadora.Dados;
 using Locadora.Dominio.Interfaces;
-using Locadora.WebAPI.Dtos;
 using Locadora.WebAPI.Handlers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

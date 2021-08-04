@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Locadora.WebAPI.Dtos
+namespace Locadora.Comuns.Dtos
 {
     public class AluguelDto
     {
