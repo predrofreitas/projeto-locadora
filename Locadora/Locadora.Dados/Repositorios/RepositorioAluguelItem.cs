@@ -27,5 +27,6 @@ namespace Locadora.Dados.Repositorios
 
             return aluguelItem;
         }
+        
     }
 }

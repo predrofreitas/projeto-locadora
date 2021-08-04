@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Locadora.Comuns.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace Locadora.Dominio.Entidades
@@ -8,6 +9,7 @@ namespace Locadora.Dominio.Entidades
         public int Id { get; set; }
         public Cliente Cliente { get; set; }
         public bool Aberto { get; set; } = true;
+        public Status Status { get; set; }
         public DateTime DataPedido { get; set; }
         public DateTime DataDevolucao { get; set; }
         private readonly List<AluguelItem> _aluguelItens;
