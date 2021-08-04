@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Locadora.Dados.Repositorios;
 using Locadora.Dominio.Interfaces;
 using System;
+using RabbitMQ.Client;
 
 namespace Locadora.WebAPI
 {
@@ -41,6 +42,17 @@ namespace Locadora.WebAPI
                     errorNumbersToAdd: null);
                });
             });
+            services.AddSingleton<IConnection>(x =>
+            {
+                var fabrica = new ConnectionFactory()
+                {
+                    HostName = "localhost",
+                    UserName = "guest",
+                    Password = "guest"
+                };
+                return fabrica.CreateConnection();
+            });
+            
 
             services.AddSwaggerGen(c =>
             {
