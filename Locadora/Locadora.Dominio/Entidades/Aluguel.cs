@@ -7,6 +7,7 @@ namespace Locadora.Dominio.Entidades
     public class Aluguel
     {
         public int Id { get; set; }
+        public int ClienteId { get; set; }
         public Cliente Cliente { get; set; }
         public bool Aberto { get; set; } = true;
         public Status Status { get; set; }
