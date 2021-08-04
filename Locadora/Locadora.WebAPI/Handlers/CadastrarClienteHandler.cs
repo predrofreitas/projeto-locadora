@@ -25,18 +25,16 @@ namespace Locadora.WebAPI.Handlers
             _rabbitConnection = rabbitConnection;
         }
 
-        public async Task Criar(ClienteDto clienteDto)
+        public void Criar(ClienteDto clienteDto)
         {
             var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false);
 
-            await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
                 _repositorioCliente.Salvar(cliente);
-
-                await _locadoraContext.SaveChangesAsync();
-            });
-
-            Console.ReadLine();
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
 
             using (var canal = _rabbitConnection.CreateModel())
             {
@@ -56,28 +54,28 @@ namespace Locadora.WebAPI.Handlers
             }
         }
 
-        public async Task Atualizar(ClienteDto clienteDto)
+        public void Atualizar(ClienteDto clienteDto)
         {
             var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false);
 
-            await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
                 _repositorioCliente.Atualizar(cliente);
-
-                await _locadoraContext.SaveChangesAsync();
-            });
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
         }
 
-        public async Task Remover(int id)
+        public void Remover(int id)
         {
             var cliente = _repositorioCliente.BuscarPorId(id);
 
-            await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
                 _repositorioCliente.Remover(cliente);
-
-                await _locadoraContext.SaveChangesAsync();
-            });
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
         }
 
         public Cliente BuscarPorId(int id)

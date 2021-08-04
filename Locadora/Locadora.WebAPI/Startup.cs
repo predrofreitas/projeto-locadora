@@ -34,13 +34,7 @@ namespace Locadora.WebAPI
             services.AddScoped<UnitOfWork>();
             services.AddDbContext<LocadoraContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("LocadoraContext"), sqlServerOptionsAction: sqlOptions =>
-               {
-                   sqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 10,
-                    maxRetryDelay: TimeSpan.FromSeconds(30),
-                    errorNumbersToAdd: null);
-               });
+                options.UseSqlServer(Configuration.GetConnectionString("LocadoraContext"));
             });
             services.AddSingleton<IConnection>(x =>
             {
