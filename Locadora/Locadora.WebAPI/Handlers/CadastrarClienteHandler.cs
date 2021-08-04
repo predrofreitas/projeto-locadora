@@ -19,7 +19,7 @@ namespace Locadora.WebAPI.Handlers
 
         public async Task Criar(ClienteDto clienteDto)
         {
-            var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false);
+            var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false, clienteDto.Rua, clienteDto.Numero, clienteDto.Bairro, clienteDto.Cep, clienteDto.Cidade, clienteDto.Estado);
 
             await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
             {
@@ -31,7 +31,7 @@ namespace Locadora.WebAPI.Handlers
 
         public async Task Atualizar(ClienteDto clienteDto)
         {
-            var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false);
+            var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false, clienteDto.Rua, clienteDto.Numero, clienteDto.Bairro, clienteDto.Cep, clienteDto.Cidade, clienteDto.Estado);
 
             await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
             {
