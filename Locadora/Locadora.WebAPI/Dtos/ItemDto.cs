@@ -2,7 +2,7 @@
 
 namespace Locadora.WebAPI.Dtos
 {
-    public class MidiaDto
+    public class ItemDto
     {
         public int Id { get; set; }
         public string Nome { get; set; }
@@ -11,7 +11,5 @@ namespace Locadora.WebAPI.Dtos
         public string Categoria { get; set; }
         public float Preco { get; set; }
         public List<AluguelItemDto> Aluguel { get; set; }
-
-
     }
 }

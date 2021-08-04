@@ -10,7 +10,6 @@ namespace Locadora.WebAPI.Dtos
         public string Cpf { get; set; }
         public string Email { get; set; }
         public bool Ativo { get; set; }
-        public ClienteDto Cliente { get; set; }
         public readonly List<AluguelDto> Alugueis;
         public string Rua { get; set; }
         public int Numero { get; set; }

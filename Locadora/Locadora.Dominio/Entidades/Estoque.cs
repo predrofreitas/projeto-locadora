@@ -5,9 +5,12 @@ namespace Locadora.Dominio.Entidades
     public class Estoque
     {
         public int Id { get; set; }
-        public Midia Midia { get; set; }
+        public Item Midia { get; set; }
         public int Quantidade { get; set; }
 
+        public Estoque()
+        {
+        }
 
         public void InserirNoEstoque(int quantidade)
         {

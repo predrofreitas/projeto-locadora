@@ -21,19 +21,8 @@ namespace Locadora.Dominio.Entidades
         public string Cidade { get; set; }
         public string Estado { get; set; }
         
-        public Cliente(string nome, DateTime dataNascimento, string cpf, string email, bool ativo, string rua, int numero, string bairro, string cep, string cidade, string estado)
+        public Cliente()
         {
-            Nome = nome;
-            DataNascimento = dataNascimento;
-            Cpf = cpf;
-            Email = email;
-            Ativo = ativo;
-            Rua = rua;
-            Numero = numero;
-            Bairro = bairro;
-            Cep = cep;
-            Cidade = cidade;
-            Estado = estado;
             _alugueis = new List<Aluguel>();
         }
 

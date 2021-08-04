@@ -6,10 +6,9 @@ namespace Locadora.WebAPI.Dtos
     public class AluguelDto
     {
         public int Id { get; set; }
-        public bool Aberto { get; set; } = true;
+        public bool Aberto { get; set; }
         public DateTime DataPedido { get; set; }
         public DateTime DataDevolucao { get; set; }
-        public AluguelItemDto AluguelItem { get; set; }
-        public readonly List<AluguelItemDto> aluguelItems;
+        public readonly List<AluguelItemDto> AluguelItens;
     }
 }
