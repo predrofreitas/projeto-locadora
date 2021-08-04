@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Locadora.Comuns\Locadora.Comuns.csproj" />
     <ProjectReference Include="..\Locadora.Dados\Locadora.Dados.csproj" />
   </ItemGroup>
 
