@@ -4,6 +4,8 @@ using Locadora.Dominio.Entidades;
 using Locadora.Dominio.Interfaces;
 using RabbitMQ.Client;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -26,14 +28,7 @@ namespace Locadora.WebAPI.Handlers
 
         public void Criar(ItemDto itemDto)
         {
-            var item = new Item()
-            {
-                Nome = itemDto.Nome,
-                Descricao = itemDto.Descricao,
-                TipoMidia = itemDto.TipoMidia,
-                Categoria = itemDto.Categoria,
-                Preco = itemDto.Preco
-            };
+            var item = Map(itemDto);
 
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
@@ -62,14 +57,7 @@ namespace Locadora.WebAPI.Handlers
 
         public void Atualizar(ItemDto itemDto)
         {
-            var item = new Item()
-            {
-                Nome = itemDto.Nome,
-                Descricao = itemDto.Descricao,
-                TipoMidia = itemDto.TipoMidia,
-                Categoria = itemDto.Categoria,
-                Preco = itemDto.Preco
-            };
+            var item = Map(itemDto);
 
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
@@ -91,14 +79,63 @@ namespace Locadora.WebAPI.Handlers
             }
         }
 
-        public Item BuscarPorId(int id)
+        public ItemDto BuscarPorId(int id)
         {
-            return _repositorioItem.BuscarPorId(id);
+            var item = _repositorioItem.BuscarPorId(id);
+            if (item == null)
+                return null;
+
+            return Map(item);
         }
 
-        public Item BuscarPorNome(string nome)
+        public ItemDto BuscarPorNome(string nome)
         {
-            return _repositorioItem.BuscarPorNome(nome);
+            var item = _repositorioItem.BuscarPorNome(nome);
+            if (item == null)
+                return null;
+
+            return Map(item);
+        }
+
+        public IEnumerable<ItemDto> BuscarPorCategoria(string categoria)
+        {
+            var itens = _repositorioItem.BuscarPorCategoria(categoria).ToList();
+            if (itens == null)
+                return null;
+
+            List<ItemDto> itensDto = new List<ItemDto>(itens.Count);
+
+            itens.ForEach(item => itensDto.Add(Map(item)));
+
+            return itensDto;
+        }
+
+        public Item Map(ItemDto itemDto)
+        {
+            var item = new Item()
+            {
+                Nome = itemDto.Nome,
+                Descricao = itemDto.Descricao,
+                TipoMidia = itemDto.TipoMidia,
+                Categoria = itemDto.Categoria,
+                Preco = itemDto.Preco
+            };
+
+            return item;
+        }
+
+        public ItemDto Map(Item item)
+        {
+            var itemDto = new ItemDto()
+            {
+                Nome = item.Nome,
+                Descricao = item.Descricao,
+                TipoMidia = item.TipoMidia,
+                Categoria = item.Categoria,
+                Preco = item.Preco
+            };
+
+            return itemDto;
         }
     }
 }

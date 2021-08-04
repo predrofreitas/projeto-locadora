@@ -30,25 +30,25 @@ namespace Locadora.Dados.Repositorios
             _locadoraContext.SaveChanges();
         }
 
-        public List<Item> BuscarPorCategoria(string categoria)
+        public IEnumerable<Item> BuscarPorCategoria(string categoria)
         {
-            var midias = _locadoraContext.Itens.Where(x => x.Categoria == categoria);
+            var itens = _locadoraContext.Itens.Where(x => x.Categoria == categoria);
 
-            return midias.ToList();
+            return itens;
         }
 
         public Item BuscarPorId(int id)
         {
-            var midia = _locadoraContext.Itens.FirstOrDefault(x => x.Id == id);
+            var item = _locadoraContext.Itens.FirstOrDefault(x => x.Id == id);
 
-            return midia;
+            return item;
         }
 
         public Item BuscarPorNome(string nome)
         {
-            var midia = _locadoraContext.Itens.FirstOrDefault(x => x.Nome == nome);
+            var item = _locadoraContext.Itens.FirstOrDefault(x => x.Nome == nome);
 
-            return midia;
+            return item;
         }
     }
 }

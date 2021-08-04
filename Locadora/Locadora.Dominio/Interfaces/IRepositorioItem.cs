@@ -10,6 +10,6 @@ namespace Locadora.Dominio.Interfaces
         void Atualizar(Item item);
         Item BuscarPorId(int id);
         Item BuscarPorNome(string nome);
-        List<Item> BuscarPorCategoria(string categoria);
+        IEnumerable<Item> BuscarPorCategoria(string categoria);
     }
 }
