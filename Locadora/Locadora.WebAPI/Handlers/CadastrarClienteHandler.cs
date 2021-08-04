@@ -2,6 +2,10 @@
 using Locadora.Dominio.Entidades;
 using Locadora.Dominio.Interfaces;
 using Locadora.WebAPI.Dtos;
+using RabbitMQ.Client;
+using System;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Locadora.WebAPI.Handlers
@@ -10,47 +14,80 @@ namespace Locadora.WebAPI.Handlers
     {
         private readonly LocadoraContext _locadoraContext;
         private readonly IRepositorioCliente _repositorioCliente;
+        private readonly IConnection _rabbitConnection;
+
         public CadastrarClienteHandler(LocadoraContext locadoraContext,
-            IRepositorioCliente repositorioCliente)
+            IRepositorioCliente repositorioCliente,
+            IConnection rabbitConnection)
         {
             _locadoraContext = locadoraContext;
             _repositorioCliente = repositorioCliente;
+            _rabbitConnection = rabbitConnection;
         }
 
-        public async Task Criar(ClienteDto clienteDto)
+        public void Criar(ClienteDto clienteDto)
         {
-            //var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false, clienteDto.Rua, clienteDto.Numero, clienteDto.Bairro, clienteDto.Cep, clienteDto.Cidade, clienteDto.Estado);
+            var cliente = new Cliente()
+            {
+                Nome = clienteDto.Nome,
+                DataNascimento = clienteDto.DataNascimento,
+                Cpf = clienteDto.Cpf,
+                Email = clienteDto.Email
+            };
 
-            //await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
-            //{
-            //    _repositorioCliente.Salvar(cliente);
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
+            {
+                _repositorioCliente.Salvar(cliente);
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
 
-            //    await _locadoraContext.SaveChangesAsync();
-            //});
+            using (var canal = _rabbitConnection.CreateModel())
+            {
+                canal.QueueDeclare(queue: "qu.solicitacao.cadastro.cliente",
+                                    durable: false,
+                                    exclusive: false,
+                                    autoDelete: false,
+                                    arguments: null);
+
+
+                string mensagem = JsonSerializer.Serialize(clienteDto);
+                var corpo = Encoding.UTF8.GetBytes(mensagem);
+                canal.BasicPublish(exchange: "",
+                                    routingKey: "qu.solicitacao.cadastro.cliente",
+                                    basicProperties: null,
+                                    body: corpo);
+            }
         }
 
-        public async Task Atualizar(ClienteDto clienteDto)
+        public void Atualizar(ClienteDto clienteDto)
         {
-            //var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false, clienteDto.Rua, clienteDto.Numero, clienteDto.Bairro, clienteDto.Cep, clienteDto.Cidade, clienteDto.Estado);
+            var cliente = new Cliente()
+            {
+                Nome = clienteDto.Nome,
+                DataNascimento = clienteDto.DataNascimento,
+                Cpf = clienteDto.Cpf,
+                Email = clienteDto.Email
+            };
 
-            //await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
-            //{
-            //    _repositorioCliente.Atualizar(cliente);
-
-            //    await _locadoraContext.SaveChangesAsync();
-            //});
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
+            {
+                _repositorioCliente.Atualizar(cliente);
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
         }
 
-        public async Task Remover(int id)
+        public void Remover(int id)
         {
             var cliente = _repositorioCliente.BuscarPorId(id);
 
-            await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
                 _repositorioCliente.Remover(cliente);
-
-                await _locadoraContext.SaveChangesAsync();
-            });
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
         }
 
         public Cliente BuscarPorId(int id)
