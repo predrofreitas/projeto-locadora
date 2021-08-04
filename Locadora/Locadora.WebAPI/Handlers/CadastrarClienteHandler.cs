@@ -19,26 +19,26 @@ namespace Locadora.WebAPI.Handlers
 
         public async Task Criar(ClienteDto clienteDto)
         {
-            var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false, clienteDto.Rua, clienteDto.Numero, clienteDto.Bairro, clienteDto.Cep, clienteDto.Cidade, clienteDto.Estado);
+            //var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false, clienteDto.Rua, clienteDto.Numero, clienteDto.Bairro, clienteDto.Cep, clienteDto.Cidade, clienteDto.Estado);
 
-            await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
-            {
-                _repositorioCliente.Salvar(cliente);
+            //await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
+            //{
+            //    _repositorioCliente.Salvar(cliente);
 
-                await _locadoraContext.SaveChangesAsync();
-            });
+            //    await _locadoraContext.SaveChangesAsync();
+            //});
         }
 
         public async Task Atualizar(ClienteDto clienteDto)
         {
-            var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false, clienteDto.Rua, clienteDto.Numero, clienteDto.Bairro, clienteDto.Cep, clienteDto.Cidade, clienteDto.Estado);
+            //var cliente = new Cliente(clienteDto.Nome, clienteDto.DataNascimento, clienteDto.Cpf, clienteDto.Email, false, clienteDto.Rua, clienteDto.Numero, clienteDto.Bairro, clienteDto.Cep, clienteDto.Cidade, clienteDto.Estado);
 
-            await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
-            {
-                _repositorioCliente.Atualizar(cliente);
+            //await TransacaoResiliente.New(_locadoraContext).ExecuteAsync(async () =>
+            //{
+            //    _repositorioCliente.Atualizar(cliente);
 
-                await _locadoraContext.SaveChangesAsync();
-            });
+            //    await _locadoraContext.SaveChangesAsync();
+            //});
         }
 
         public async Task Remover(int id)

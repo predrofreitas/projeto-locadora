@@ -5,36 +5,36 @@ using System.Linq;
 
 namespace Locadora.Dados.Repositorios
 {
-    public class RepositorioMidia : IRepositorioMidia
+    public class RepositorioItem : IRepositorioItem
     {
         private readonly LocadoraContext _locadoraContext;
 
-        public RepositorioMidia(LocadoraContext locadoraContext)
+        public RepositorioItem(LocadoraContext locadoraContext)
         {
             _locadoraContext = locadoraContext;
         }
-        public void Salvar(Item midia)
+        public void Salvar(Item item)
         {
-            _locadoraContext.Add(midia);
+            _locadoraContext.Add(item);
         }
 
         public List<Item> ObterPorCategoria(string categoria)
         {
-            var midias = _locadoraContext.Midias.Where(x => x.Categoria == categoria);
+            var midias = _locadoraContext.Itens.Where(x => x.Categoria == categoria);
 
             return midias.ToList();
         }
 
         public Item ObterPorId(int id)
         {
-            var midia = _locadoraContext.Midias.FirstOrDefault(x => x.Id == id);
+            var midia = _locadoraContext.Itens.FirstOrDefault(x => x.Id == id);
 
             return midia;
         }
 
         public Item ObterPorNome(string nome)
         {
-            var midia = _locadoraContext.Midias.FirstOrDefault(x => x.Nome == nome);
+            var midia = _locadoraContext.Itens.FirstOrDefault(x => x.Nome == nome);
 
             return midia;
         }

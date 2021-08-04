@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Locadora.Dominio.Interfaces
 {
-    public interface IRepositorioMidia
+    public interface IRepositorioItem
     {
         void Salvar(Item midia);
         Item ObterPorId(int id);
