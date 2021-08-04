@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Locadora.Comuns.Dtos;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -32,7 +33,7 @@ namespace ProcessarSolicitacaoAluguel
                     
                     var corpo = ea.Body.ToArray();
                     var mensagem = Encoding.UTF8.GetString(corpo);
-                    //ClientDto clienteDto = JsonSerializer.Deserialize<ClientDto>(mensagem);
+                    ClienteDto clienteDto = JsonSerializer.Deserialize<ClienteDto>(mensagem);
 
                     canal.BasicAck(
                         deliveryTag: ea.DeliveryTag,

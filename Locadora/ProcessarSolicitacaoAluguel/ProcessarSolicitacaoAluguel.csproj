@@ -12,4 +12,7 @@
   <ItemGroup>
     <None Remove="RabbitMQ.Client" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Locadora.Comuns\Locadora.Comuns.csproj" />
+  </ItemGroup>
 </Project>
