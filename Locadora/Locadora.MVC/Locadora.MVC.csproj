@@ -9,4 +9,18 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\LoginController.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Locadora.Comuns\Locadora.Comuns.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Controllers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
 </Project>

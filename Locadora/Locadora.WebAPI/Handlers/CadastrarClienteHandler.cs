@@ -1,4 +1,6 @@
-﻿using Locadora.Comuns.Dtos;
+﻿using System.Text;
+using System.Text.Json;
+using Locadora.Comuns.Dtos;
 using Locadora.Dados;
 using Locadora.Dominio.Entidades;
 using Locadora.Dominio.Interfaces;
@@ -11,6 +13,8 @@ namespace Locadora.WebAPI.Handlers
         private readonly LocadoraContext _locadoraContext;
         private readonly IRepositorioCliente _repositorioCliente;
         private readonly IConnection _rabbitConnection;
+        private LocadoraContext locadoraContext;
+        private IRepositorioCliente repositorioCliente;
 
         public CadastrarClienteHandler(LocadoraContext locadoraContext,
             IRepositorioCliente repositorioCliente,
@@ -19,6 +23,13 @@ namespace Locadora.WebAPI.Handlers
             _locadoraContext = locadoraContext;
             _repositorioCliente = repositorioCliente;
             _rabbitConnection = rabbitConnection;
+        }
+
+        public CadastrarClienteHandler(LocadoraContext locadoraContext,
+            IRepositorioCliente repositorioCliente)
+        {
+            _locadoraContext = locadoraContext;
+            _repositorioCliente = repositorioCliente;
         }
 
         public int Criar(ClienteDto clienteDto)
@@ -33,24 +44,26 @@ namespace Locadora.WebAPI.Handlers
                 transacao.Commit();
             }
 
+            using (var canal = _rabbitConnection.CreateModel())
+            {
+                //canal.QueueDeclare(queue: "qu.solicitacao.cadastro.cliente",
+                //                    durable: false,
+                //                    exclusive: false,
+                //                    autoDelete: false,
+                //                    arguments: null);
+
+
+                //string mensagem = JsonSerializer.Serialize(clienteDto);
+                //var corpo = Encoding.UTF8.GetBytes(mensagem);
+                //canal.BasicPublish(exchange: "",
+                //                    routingKey: "qu.solicitacao.cadastro.cliente",
+                //                    basicProperties: null,
+                //                    body: corpo);
+            }
+
             return id;
 
-            //using (var canal = _rabbitConnection.CreateModel())
-            //{
-            //    canal.QueueDeclare(queue: "qu.solicitacao.cadastro.cliente",
-            //                        durable: false,
-            //                        exclusive: false,
-            //                        autoDelete: false,
-            //                        arguments: null);
-
-
-            //    string mensagem = JsonSerializer.Serialize(clienteDto);
-            //    var corpo = Encoding.UTF8.GetBytes(mensagem);
-            //    canal.BasicPublish(exchange: "",
-            //                        routingKey: "qu.solicitacao.cadastro.cliente",
-            //                        basicProperties: null,
-            //                        body: corpo);
-            //}
+            
         }
 
         public void Atualizar(ClienteDto clienteDto, int id)
@@ -106,6 +119,7 @@ namespace Locadora.WebAPI.Handlers
                 DataNascimento = clienteDto.DataNascimento,
                 Cpf = clienteDto.Cpf,
                 Email = clienteDto.Email,
+                Senha = clienteDto.Senha,
                 Ativo = clienteDto.Ativo,
                 Rua = clienteDto.Rua,
                 Numero = clienteDto.Numero,
@@ -126,6 +140,7 @@ namespace Locadora.WebAPI.Handlers
                 DataNascimento = cliente.DataNascimento,
                 Cpf = cliente.Cpf,
                 Email = cliente.Email,
+                Senha = cliente.Senha,
                 Ativo = cliente.Ativo,
                 Rua = cliente.Rua,
                 Numero = cliente.Numero,

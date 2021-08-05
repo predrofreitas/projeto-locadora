@@ -11,6 +11,7 @@ namespace Locadora.Dominio.Entidades
         public DateTime DataNascimento { get; set; }
         public string Cpf { get; set; }
         public string Email { get; set; }
+        public string Senha { get; set; }
         public bool Ativo { get; set; }
         private readonly List<Aluguel> _alugueis;
         public IReadOnlyCollection<Aluguel> Alugueis => _alugueis;

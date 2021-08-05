@@ -10,6 +10,10 @@ using Locadora.Dados.Repositorios;
 using Locadora.Dominio.Interfaces;
 using System;
 using RabbitMQ.Client;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Locadora.Comuns;
 
 namespace Locadora.WebAPI
 {
@@ -46,7 +50,24 @@ namespace Locadora.WebAPI
                 };
                 return fabrica.CreateConnection();
             });
-            
+
+            var chave = Encoding.ASCII.GetBytes(Settings.Secret);
+            services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(j =>
+            {
+                j.RequireHttpsMetadata = false;
+                j.SaveToken = true;
+                j.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(chave),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
             services.AddSwaggerGen(c =>
             {
@@ -66,6 +87,8 @@ namespace Locadora.WebAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

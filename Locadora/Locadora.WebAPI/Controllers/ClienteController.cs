@@ -2,6 +2,7 @@
 using Locadora.Dados;
 using Locadora.Dominio.Interfaces;
 using Locadora.WebAPI.Handlers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -11,6 +12,7 @@ namespace Locadora.WebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    //[Authorize]
     public class ClienteController : ControllerBase
     {
         private readonly ILogger<ClienteController> _logger;

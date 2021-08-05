@@ -9,6 +9,7 @@ namespace Locadora.Comuns.Dtos
         public DateTime DataNascimento { get; set; }
         public string Cpf { get; set; }
         public string Email { get; set; }
+        public string Senha { get; set; }
         public bool Ativo { get; set; }
         public readonly List<AluguelDto> Alugueis;
         public string Rua { get; set; }
