@@ -1,11 +1,10 @@
 ﻿using Locadora.Comuns.Dtos;
-using Locadora.Dados;
-using Locadora.Dominio.Interfaces;
-using Locadora.WebAPI.Handlers;
+using Locadora.WebAPI.Commands.ContextoAluguel;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using System;
+using System.Threading.Tasks;
 
 namespace Locadora.WebAPI.Controllers
 {
@@ -14,42 +13,24 @@ namespace Locadora.WebAPI.Controllers
     public class AluguelController : ControllerBase
     {
         private readonly ILogger<AluguelController> _logger;
-        private readonly IRepositorioCliente _repositorioCliente;
-        private readonly IRepositorioAluguel _repositorioAluguel;
-        private readonly IRepositorioAluguelItem _repositorioAluguelItem;
-        private readonly IRepositorioEstoque _repositorioEstoque;
-        private readonly IRepositorioItem _repositorioItem;
-        private readonly LocadoraContext _locadoraContext;
-        private readonly IConnection _rabbitConnection;
+        private readonly IMediator _mediator;
 
-        public AluguelController(ILogger<AluguelController> logger,
-            IRepositorioCliente repositorioCliente,
-            IRepositorioAluguel repositorioAluguel,
-            IRepositorioAluguelItem repositorioAluguelItem,
-            IRepositorioEstoque repositorioEstoque,
-            IRepositorioItem repositorioItem,
-        LocadoraContext locadoraContext,
-            IConnection rabbitConnection)
+        public AluguelController(ILogger<AluguelController> logger, IMediator mediator)
         {
             _logger = logger;
-            _locadoraContext = locadoraContext;
-            _repositorioCliente = repositorioCliente;
-            _repositorioAluguel = repositorioAluguel;
-            _repositorioAluguelItem = repositorioAluguelItem;
-            _repositorioEstoque = repositorioEstoque;
-            _repositorioItem = repositorioItem;
-            _rabbitConnection = rabbitConnection;
+            _mediator = mediator;
         }
 
         [HttpPost]
         [Route("reserva")]
-        public IActionResult PostReserva(AluguelDto aluguelDto)
+        public async Task<IActionResult> PostReserva(AluguelDto aluguelDto)
         {
             try
             {
-                var alugarHandler = new AlugarHandler(_locadoraContext, _repositorioAluguel, _repositorioAluguelItem, _repositorioEstoque, _repositorioCliente, _repositorioItem, _rabbitConnection);
-                alugarHandler.CriarReserva(aluguelDto);
-                return Ok();
+                var command = new ReservarAluguelCommand(aluguelDto);
+                await _mediator.Send(command);
+
+                return Ok("Reserva de aluguel feita com sucesso!");
             }
             catch (Exception ex)
             {
@@ -58,15 +39,16 @@ namespace Locadora.WebAPI.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("processamento")]
-        public IActionResult PostAluguel(AluguelDto aluguelDto)
+        public async Task<IActionResult> PostAluguel(AluguelDto aluguelDto)
         {
             try
             {
-                var alugarHandler = new AlugarHandler(_locadoraContext, _repositorioAluguel, _repositorioAluguelItem, _repositorioEstoque, _repositorioCliente, _repositorioItem, _rabbitConnection);
-                alugarHandler.CriarAluguel(aluguelDto);
-                return Ok();
+                var command = new ReservarAluguelCommand(aluguelDto);
+                await _mediator.Send(command);
+
+                return Ok("Aluguel atendido e já enviado!");
             }
             catch (Exception ex)
             {
@@ -77,13 +59,14 @@ namespace Locadora.WebAPI.Controllers
 
         [HttpPost]
         [Route("devolucao")]
-        public IActionResult PostDevolucao(AluguelDto aluguelDto)
+        public async Task<IActionResult> PostDevolucao(AluguelDto aluguelDto)
         {
             try
             {
-                var alugarHandler = new AlugarHandler(_locadoraContext, _repositorioAluguel, _repositorioAluguelItem, _repositorioEstoque, _repositorioCliente, _repositorioItem, _rabbitConnection);
-                var mensagem = alugarHandler.DevolverAluguel(aluguelDto);
-                return Ok(mensagem);
+                var command = new DevolverAluguelCommand(aluguelDto);
+                var result = await _mediator.Send(command);
+
+                return Ok(result);
             }
             catch (Exception ex)
             {

@@ -2,13 +2,20 @@
 using Locadora.Dados;
 using Locadora.Dominio.Entidades;
 using Locadora.Dominio.Interfaces;
+using Locadora.WebAPI.Commands.ContextoAluguel;
+using MediatR;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Locadora.WebAPI.Handlers
 {
-    public class AlugarHandler
+    public class AlugarHandler : 
+        IRequestHandler<DevolverAluguelCommand, string>,
+        IRequestHandler<ProcessarAluguelCommand>,
+        IRequestHandler<ReservarAluguelCommand>
     {
         private readonly LocadoraContext _locadoraContext;
         private readonly IRepositorioAluguel _repositorioAluguel;
@@ -35,10 +42,9 @@ namespace Locadora.WebAPI.Handlers
             _rabbitConnection = rabbitConnection;
         }
 
-        public void CriarReserva(AluguelDto aluguelDto)
+        public async Task<Unit> Handle(ReservarAluguelCommand request, CancellationToken cancellationToken)
         {
-
-            var aluguel = Map(aluguelDto);
+            var aluguel = Map(request.AluguelDto);
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
                 _repositorioAluguel.Salvar(aluguel);
@@ -46,16 +52,20 @@ namespace Locadora.WebAPI.Handlers
                 transacao.Commit();
             }
 
-            aluguelDto.Id = aluguel.Id;
+            request.AluguelDto.Id = aluguel.Id;
+
+            //posta o request.AluguelDto no RabbitMQ
+
+            return Unit.Value;
         }
 
-        public void CriarAluguel(AluguelDto aluguelDto)
+        public async Task<Unit> Handle(ProcessarAluguelCommand request, CancellationToken cancellationToken)
         {
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
-                var aluguel = _repositorioAluguel.ObterPorId(aluguelDto.Id);
+                var aluguel = _repositorioAluguel.ObterPorId(request.AluguelDto.Id);
 
-                aluguelDto.AluguelItens.ForEach(aluguelItem =>
+                request.AluguelDto.AluguelItens.ForEach(aluguelItem =>
                 {
                     var estoque = _repositorioEstoque.BuscarPorItemId(aluguelItem.ItemId);
                     estoque.RetirarDoEstoque();
@@ -68,15 +78,17 @@ namespace Locadora.WebAPI.Handlers
                 _locadoraContext.SaveChanges();
                 transacao.Commit();
             }
+
+            return Unit.Value;
         }
 
-        public string DevolverAluguel(AluguelDto aluguelDto)
+        public async Task<string> Handle(DevolverAluguelCommand request, CancellationToken cancellationToken)
         {
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
-                var aluguel = _repositorioAluguel.ObterPorId(aluguelDto.Id);
+                var aluguel = _repositorioAluguel.ObterPorId(request.AluguelDto.Id);
 
-                aluguelDto.AluguelItens.ForEach(aluguelItem =>
+                request.AluguelDto.AluguelItens.ForEach(aluguelItem =>
                 {
                     var item = _repositorioItem.BuscarPorId(aluguelItem.ItemId);
                     aluguel.AdicionarItem(new AluguelItem { Item = item });
