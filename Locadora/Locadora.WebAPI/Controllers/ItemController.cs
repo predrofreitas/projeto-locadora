@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Locadora.Comuns.Dtos;
-using Locadora.Dados;
-using Locadora.Dominio.Interfaces;
-using Locadora.WebAPI.Handlers;
+﻿using Locadora.Comuns.Dtos;
+using Locadora.WebAPI.Commands.ContextoItem;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Locadora.WebAPI.Controllers
 {
@@ -15,32 +14,23 @@ namespace Locadora.WebAPI.Controllers
     public class ItemController : ControllerBase
     {
         private readonly ILogger<ItemController> _logger;
-        private readonly IRepositorioItem _repositorioItem;
-        private readonly IRepositorioEstoque _repositorioEstoque;
-        private readonly LocadoraContext _locadoraContext;
-        private readonly IConnection _rabbitConnection;
+        private readonly IMediator _mediator;
 
-        public ItemController(ILogger<ItemController> logger,
-            IRepositorioItem repositorioItem,
-            IRepositorioEstoque repositorioEstoque,
-            LocadoraContext locadoraContext,
-            IConnection rabbitConnection)
+        public ItemController(ILogger<ItemController> logger, IMediator mediator)
         {
             _logger = logger;
-            _locadoraContext = locadoraContext;
-            _repositorioItem = repositorioItem;
-            _repositorioEstoque = repositorioEstoque;
-            _rabbitConnection = rabbitConnection;
+            _mediator = mediator;
         }
 
         [HttpPost]
-        public IActionResult Post(ItemDto itemDto)
+        public async Task<IActionResult> Post(ItemDto itemDto)
         {
             try
             {
-                var cadastrarItem = new CadastrarItemHandler(_locadoraContext, _repositorioItem, _repositorioEstoque, _rabbitConnection);
-                var dto = cadastrarItem.Criar(itemDto);
-                return CreatedAtAction(nameof(Post), dto);
+                var command = new InserirItemCommand(itemDto);
+                var result = await _mediator.Send(command);
+
+                return CreatedAtAction(nameof(Post), result);
             }
             catch (Exception ex)
             {
@@ -50,36 +40,41 @@ namespace Locadora.WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public ItemDto Get(int id)
+        public async Task<ItemDto> Get(int id)
         {
-            var cadastrarItem = new CadastrarItemHandler(_locadoraContext, _repositorioItem, _repositorioEstoque, _rabbitConnection);
-            var item = cadastrarItem.BuscarPorId(id);
-            return item;
+            var command = new ObterItemPorIdCommand(id);
+            var result = await _mediator.Send(command);
+
+            return result;
         }
 
         [HttpGet("nome/{nome}")]
-        public ItemDto Get(string nome)
+        public async Task<ItemDto> Get(string nome)
         {
-            var cadastrarItem = new CadastrarItemHandler(_locadoraContext, _repositorioItem, _repositorioEstoque, _rabbitConnection);
-            var item = cadastrarItem.BuscarPorNome(nome);
-            return item;
+            var command = new ObterItemPorNomeCommand(nome);
+            var result = await _mediator.Send(command);
+
+            return result;
         }
 
         [HttpGet("categoria/{categoria}")]
-        public IEnumerable<ItemDto> GetByCategoria(string categoria)
+        public async Task<IEnumerable<ItemDto>> GetByCategoria(string categoria)
         {
-            var cadastrarItem = new CadastrarItemHandler(_locadoraContext, _repositorioItem, _repositorioEstoque, _rabbitConnection);
-            var itens = cadastrarItem.BuscarPorCategoria(categoria);
-            return itens;
+            var command = new ObterItemPorCategoriaCommand(categoria);
+            var result = await _mediator.Send(command);
+
+            return result;
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] ItemDto item)
+        public async Task<IActionResult> Put(int id, [FromBody] ItemDto item)
         {
             try
             {
-                var cadastrarItem = new CadastrarItemHandler(_locadoraContext, _repositorioItem, _repositorioEstoque, _rabbitConnection);
-                cadastrarItem.Atualizar(item, id);
+                item.Id = id;
+                var command = new AtualizarItemCommand(item);
+                await _mediator.Send(command);
+
                 return Ok("Dados do Item Atualizado.");
             }
             catch (Exception)
@@ -90,12 +85,12 @@ namespace Locadora.WebAPI.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public IActionResult Remover(int id)
+        public async Task<IActionResult> Remover(int id)
         {
             try
             {
-                var cadastrarItem = new CadastrarItemHandler(_locadoraContext, _repositorioItem, _repositorioEstoque, _rabbitConnection);
-                cadastrarItem.Remover(id);
+                var command = new DeletarItemCommand(id);
+                await _mediator.Send(command);
 
                 return Ok("Item deletado com sucesso.");
             }

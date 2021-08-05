@@ -2,95 +2,84 @@
 using Locadora.Dados;
 using Locadora.Dominio.Entidades;
 using Locadora.Dominio.Interfaces;
-using RabbitMQ.Client;
-using System;
+using Locadora.WebAPI.Commands.ContextoItem;
+using MediatR;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Locadora.WebAPI.Handlers
 {
-    public class CadastrarItemHandler
+    public class CadastrarItemHandler :
+        IRequestHandler<AtualizarItemCommand>,
+        IRequestHandler<DeletarItemCommand>,
+        IRequestHandler<InserirItemCommand, ItemDto>,
+        IRequestHandler<ObterItemPorCategoriaCommand, IEnumerable<ItemDto>>,
+        IRequestHandler<ObterItemPorIdCommand, ItemDto>,
+        IRequestHandler<ObterItemPorNomeCommand, ItemDto>
     {
         private readonly LocadoraContext _locadoraContext;
         private readonly IRepositorioItem _repositorioItem;
         private readonly IRepositorioEstoque _repositorioEstoque;
-        private readonly IConnection _rabbitConnection;
 
         public CadastrarItemHandler(LocadoraContext locadoraContext,
             IRepositorioItem repositorioItem,
-            IRepositorioEstoque repositorioEstoque,
-            IConnection rabbitConnection)
+            IRepositorioEstoque repositorioEstoque)
         {
             _locadoraContext = locadoraContext;
             _repositorioItem = repositorioItem;
-            _rabbitConnection = rabbitConnection;
             _repositorioEstoque = repositorioEstoque;
         }
 
-        public ItemDto Criar(ItemDto itemDto)
+        public async Task<Unit> Handle(AtualizarItemCommand request, CancellationToken cancellationToken)
         {
-            var item = Map(itemDto);
+            var item = Map(request.ItemDto);
 
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
-                itemDto.Id = _repositorioItem.Salvar(item);
+                item.Id = request.ItemDto.Id;
+                _repositorioItem.Atualizar(item);
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
+
+            return Unit.Value;
+        }
+
+        public async Task<Unit> Handle(DeletarItemCommand request, CancellationToken cancellationToken)
+        {
+            var item = _repositorioItem.BuscarPorId(request.Id);
+
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
+            {
+                _repositorioEstoque.RemoverPorItemId(request.Id);
+                _repositorioItem.Remover(item);
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
+
+            return Unit.Value;
+        }
+
+        public async Task<ItemDto> Handle(InserirItemCommand request, CancellationToken cancellationToken)
+        {
+            var item = Map(request.ItemDto);
+
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
+            {
+                request.ItemDto.Id = _repositorioItem.Salvar(item);
                 _repositorioEstoque.Salvar(new Estoque { Quantidade = 3, Item = item });
                 _locadoraContext.SaveChanges();
                 transacao.Commit();
             }
 
-            return itemDto;
+            return request.ItemDto;
         }
 
-        public void Atualizar(ItemDto itemDto, int id)
+        public async Task<IEnumerable<ItemDto>> Handle(ObterItemPorCategoriaCommand request, CancellationToken cancellationToken)
         {
-            var item = Map(itemDto);
-
-            using (var transacao = _locadoraContext.Database.BeginTransaction())
-            {
-                item.Id = id;
-                _repositorioItem.Atualizar(item);
-                _locadoraContext.SaveChanges();
-                transacao.Commit();
-            }
-        }
-
-        public void Remover(int id)
-        {
-            var item = _repositorioItem.BuscarPorId(id);
-
-            using (var transacao = _locadoraContext.Database.BeginTransaction())
-            {
-                _repositorioEstoque.RemoverPorItemId(id);
-                _repositorioItem.Remover(item);
-                _locadoraContext.SaveChanges();
-                transacao.Commit();
-            }
-        }
-
-        public ItemDto BuscarPorId(int id)
-        {
-            var item = _repositorioItem.BuscarPorId(id);
-            if (item == null)
-                return null;
-
-            return Map(item);
-        }
-
-        public ItemDto BuscarPorNome(string nome)
-        {
-            var item = _repositorioItem.BuscarPorNome(nome);
-            if (item == null)
-                return null;
-
-            return Map(item);
-        }
-
-        public IEnumerable<ItemDto> BuscarPorCategoria(string categoria)
-        {
-            var itens = _repositorioItem.BuscarPorCategoria(categoria).ToList();
+            var itens = _repositorioItem.BuscarPorCategoria(request.Categoria).ToList();
             if (itens == null)
                 return null;
 
@@ -99,6 +88,24 @@ namespace Locadora.WebAPI.Handlers
             itens.ForEach(item => itensDto.Add(Map(item)));
 
             return itensDto;
+        }
+
+        public async Task<ItemDto> Handle(ObterItemPorIdCommand request, CancellationToken cancellationToken)
+        {
+            var item = _repositorioItem.BuscarPorId(request.Id);
+            if (item == null)
+                return null;
+
+            return Map(item);
+        }
+
+        public async Task<ItemDto> Handle(ObterItemPorNomeCommand request, CancellationToken cancellationToken)
+        {
+            var item = _repositorioItem.BuscarPorNome(request.Nome);
+            if (item == null)
+                return null;
+
+            return Map(item);
         }
 
         public Item Map(ItemDto itemDto)
