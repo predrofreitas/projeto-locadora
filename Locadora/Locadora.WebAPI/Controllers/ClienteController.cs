@@ -61,9 +61,8 @@ namespace Locadora.WebAPI.Controllers
             return cliente;
         }
 
-        //Necessário preencher todos os campos do cliente.
-        [HttpPost("{id}")]
-        public IActionResult Post(int id, [FromBody] ClienteDto cliente)
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] ClienteDto cliente)
         {
             try
             {

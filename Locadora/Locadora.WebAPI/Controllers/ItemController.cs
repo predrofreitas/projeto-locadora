@@ -34,13 +34,13 @@ namespace Locadora.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult CriarItem(ItemDto itemDto)
+        public IActionResult Post(ItemDto itemDto)
         {
             try
             {
                 var cadastrarItem = new CadastrarItemHandler(_locadoraContext, _repositorioItem, _repositorioEstoque, _rabbitConnection);
                 var dto = cadastrarItem.Criar(itemDto);
-                return CreatedAtAction(nameof(CriarItem), dto);
+                return CreatedAtAction(nameof(Post), dto);
             }
             catch (Exception ex)
             {
@@ -73,8 +73,8 @@ namespace Locadora.WebAPI.Controllers
             return itens;
         }
 
-        [HttpPost("{id}")]
-        public IActionResult Post(int id, [FromBody] ItemDto item)
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] ItemDto item)
         {
             try
             {
