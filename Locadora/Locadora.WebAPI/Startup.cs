@@ -10,6 +10,8 @@ using Locadora.Dados.Repositorios;
 using Locadora.Dominio.Interfaces;
 using System;
 using RabbitMQ.Client;
+using MediatR;
+using Locadora.WebAPI.Handlers;
 
 namespace Locadora.WebAPI
 {
@@ -32,6 +34,8 @@ namespace Locadora.WebAPI
             services.AddTransient<IRepositorioItem, RepositorioItem>();
             services.AddTransient<IRepositorioEstoque, RepositorioEstoque>();
             services.AddTransient<IRepositorioAluguelItem, RepositorioAluguelItem>();
+
+            services.AddMediatR((AppDomain.CurrentDomain.GetAssemblies()));
 
             services.AddScoped<UnitOfWork>();
             services.AddDbContext<LocadoraContext>(options =>

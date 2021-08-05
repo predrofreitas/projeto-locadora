@@ -1,11 +1,12 @@
-﻿using Locadora.Comuns.Dtos;
-using Locadora.Dados;
-using Locadora.Dominio.Interfaces;
-using Locadora.WebAPI.Handlers;
+﻿using Locadora.WebAPI.Commands.ContextoCliente;
 using Microsoft.AspNetCore.Mvc;
+using Locadora.WebAPI.Handlers;
+using Locadora.Comuns.Dtos;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
+using MediatR;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace Locadora.WebAPI.Controllers
 {
@@ -14,29 +15,23 @@ namespace Locadora.WebAPI.Controllers
     public class ClienteController : ControllerBase
     {
         private readonly ILogger<ClienteController> _logger;
-        private readonly IRepositorioCliente _repositorioCliente;
-        private readonly LocadoraContext _locadoraContext;
-        private readonly IConnection _rabbitConnection;
+        private readonly IMediator _mediator;
 
-        public ClienteController(ILogger<ClienteController> logger,
-            IRepositorioCliente repositorioCliente,
-            LocadoraContext locadoraContext,
-            IConnection rabbitConnection)
+        public ClienteController(ILogger<ClienteController> logger, IMediator mediator)
         {
             _logger = logger;
-            _locadoraContext = locadoraContext;
-            _repositorioCliente = repositorioCliente;
-            _rabbitConnection = rabbitConnection;
+            _mediator = mediator;
         }
 
         [HttpPost]
-        public IActionResult Post(ClienteDto clienteDto)
+        public async Task<IActionResult> Post(ClienteDto clienteDto)
         {
             try
             {
-                var cadastrarCliente = new CadastrarClienteHandler(_locadoraContext, _repositorioCliente, _rabbitConnection);
-                var id = cadastrarCliente.Criar(clienteDto);
-                return CreatedAtAction(nameof(Post), id);
+                var command = new InserirClienteCommand(clienteDto);
+                var result = await _mediator.Send(command);
+
+                return CreatedAtAction(nameof(Post), result);
             }
             catch (Exception ex)
             {
@@ -46,28 +41,32 @@ namespace Locadora.WebAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public ClienteDto Get(int id)
+        public async Task<ClienteDto> Get(int id)
         {
-            var cadastrarCliente = new CadastrarClienteHandler(_locadoraContext, _repositorioCliente, _rabbitConnection);
-            var cliente = cadastrarCliente.BuscarPorId(id);
-            return cliente;
+            var command = new ObterClientePorIdCommand(id);
+            var result = await _mediator.Send(command);
+
+            return result;
         }
 
         [HttpGet("nome/{nome}")]
-        public ClienteDto Get(string nome)
+        public async Task<ClienteDto> Get(string nome)
         {
-            var cadastrarCliente = new CadastrarClienteHandler(_locadoraContext, _repositorioCliente, _rabbitConnection);
-            var cliente = cadastrarCliente.BuscarPorNome(nome);
-            return cliente;
+            var command = new ObterClientePorNomeCommand(nome);
+            var result = await _mediator.Send(command);
+
+            return result;
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] ClienteDto cliente)
+        public async Task<IActionResult> Put([Required] int id, [Required][FromBody] ClienteDto clienteDto)
         {
             try
             {
-                var cadastrarCliente = new CadastrarClienteHandler(_locadoraContext, _repositorioCliente, _rabbitConnection);
-                cadastrarCliente.Atualizar(cliente, id);
+                clienteDto.Id = id;
+                var command = new AtualizarClienteCommand(clienteDto);
+                await _mediator.Send(command);
+
                 return Ok("Dados do Cliente Atualizado.");
             }
             catch (Exception)
@@ -77,12 +76,12 @@ namespace Locadora.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var cadastrarCliente = new CadastrarClienteHandler(_locadoraContext, _repositorioCliente, _rabbitConnection);
-                cadastrarCliente.Remover(id);
+                var command = new DeletarClienteCommand(id);
+                await _mediator.Send(command);
 
                 return Ok("Cliente deletado com sucesso.");
             }

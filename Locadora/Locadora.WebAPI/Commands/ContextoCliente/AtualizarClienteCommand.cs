@@ -3,11 +3,11 @@ using MediatR;
 
 namespace Locadora.WebAPI.Commands.ContextoCliente
 {
-    public class AtualizarItemCommand : IRequest
+    public class AtualizarClienteCommand : IRequest
     {
         public ClienteDto ClienteDto { get; }
 
-        public AtualizarItemCommand(ClienteDto clienteDto)
+        public AtualizarClienteCommand(ClienteDto clienteDto)
         {
             ClienteDto = clienteDto;
         }
