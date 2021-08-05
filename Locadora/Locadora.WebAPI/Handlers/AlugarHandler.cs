@@ -5,9 +5,6 @@ using Locadora.Dominio.Interfaces;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 
 namespace Locadora.WebAPI.Handlers
 {
@@ -17,108 +14,137 @@ namespace Locadora.WebAPI.Handlers
         private readonly IRepositorioAluguel _repositorioAluguel;
         private readonly IRepositorioAluguelItem _repositorioAluguelItem;
         private readonly IRepositorioEstoque _repositorioEstoque;
+        private readonly IRepositorioCliente _repositorioCliente;
+        private readonly IRepositorioItem _repositorioItem;
         private readonly IConnection _rabbitConnection;
 
         public AlugarHandler(LocadoraContext locadoraContext,
             IRepositorioAluguel repositorioAluguel,
             IRepositorioAluguelItem repositorioAluguelItem,
+            IRepositorioEstoque repositorioEstoque,
+            IRepositorioCliente repositorioCliente,
+            IRepositorioItem repositorioItem,
             IConnection rabbitConnection)
         {
             _locadoraContext = locadoraContext;
             _repositorioAluguel = repositorioAluguel;
             _repositorioAluguelItem = repositorioAluguelItem;
+            _repositorioCliente = repositorioCliente;
+            _repositorioEstoque = repositorioEstoque;
+            _repositorioItem = repositorioItem;
             _rabbitConnection = rabbitConnection;
         }
 
-        //public void CriarAluguel(List<Item> itens)
-        //{
-        //    var aluguel = new Aluguel();
-        //    var estoque = new Estoque();
+        public void CriarReserva(AluguelDto aluguelDto)
+        {
 
-        //    itens.ForEach(item => )
+            var aluguel = Map(aluguelDto);
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
+            {
+                _repositorioAluguel.Salvar(aluguel);
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
 
+            aluguelDto.Id = aluguel.Id;
+        }
 
-        //    using (var transacao = _locadoraContext.Database.BeginTransaction())
-        //    {
-        //        _repositorioAluguel.Salvar(aluguel);
-        //        _locadoraContext.SaveChanges();
-        //        transacao.Commit();
-        //    }
+        public void CriarAluguel(AluguelDto aluguelDto)
+        {
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
+            {
+                var aluguel = _repositorioAluguel.ObterPorId(aluguelDto.Id);
 
-        //    using (var canal = _rabbitConnection.CreateModel())
-        //    {
-        //        canal.QueueDeclare(queue: "qu.solicitacao.cadastro.aluguel",
-        //                            durable: false,
-        //                            exclusive: false,
-        //                            autoDelete: false,
-        //                            arguments: null);
+                aluguelDto.AluguelItens.ForEach(aluguelItem =>
+                {
+                    var estoque = _repositorioEstoque.BuscarPorItemId(aluguelItem.ItemId);
+                    estoque.RetirarDoEstoque();
+                    _locadoraContext.SaveChanges();
+                });
 
+                aluguel.Aberto = true;
+                aluguel.DataDevolucao = DateTime.Now.AddDays(7);
+                aluguel.Status = Comuns.Enums.Status.ALUGADO;
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
+            }
+        }
 
-        //        string mensagem = JsonSerializer.Serialize(aluguelDto);
-        //        var corpo = Encoding.UTF8.GetBytes(mensagem);
-        //        canal.BasicPublish(exchange: "",
-        //                            routingKey: "qu.solicitacao.cadastro.aluguel",
-        //                            basicProperties: null,
-        //                            body: corpo);
-        //    }
-        //}
+        public string DevolverAluguel(AluguelDto aluguelDto)
+        {
+            using (var transacao = _locadoraContext.Database.BeginTransaction())
+            {
+                var aluguel = _repositorioAluguel.ObterPorId(aluguelDto.Id);
 
-        /*   public void Atualizar(ItemDto itemDto)
-           {
-               var item = Map(itemDto);
+                aluguelDto.AluguelItens.ForEach(aluguelItem =>
+                {
+                    var item = _repositorioItem.BuscarPorId(aluguelItem.ItemId);
+                    aluguel.AdicionarItem(new AluguelItem { Item = item });
+                    var estoque = _repositorioEstoque.BuscarPorItemId(aluguelItem.ItemId);
+                    estoque.ReporNoEstoque();
+                    _locadoraContext.SaveChanges();
+                });
 
-               using (var transacao = _locadoraContext.Database.BeginTransaction())
-               {
-                   _repositorioItem.Atualizar(item);
-                   _locadoraContext.SaveChanges();
-                   transacao.Commit();
-               }
-           }
-   */
-        /*      public void Remover(int id)
-              {
-                  var item = _repositorioItem.BuscarPorId(id);
+                aluguel.Aberto = false;
+                aluguel.Status = Comuns.Enums.Status.DEVOLVIDO;
 
-                  using (var transacao = _locadoraContext.Database.BeginTransaction())
-                  {
-                      _repositorioItem.Remover(item);
-                      _locadoraContext.SaveChanges();
-                      transacao.Commit();
-                  }
-              }
-        */
+                _locadoraContext.SaveChanges();
+                transacao.Commit();
 
-        /*      public ItemDto BuscarPorId(int id)
-              {
-                  var item = _repositorioItem.BuscarPorId(id);
-                  if (item == null)
-                      return null;
-
-                  return Map(item);
-              }
-        */
-
+                return aluguel.CalcularMulta();
+            }
+        }
 
         public Aluguel Map(AluguelDto aluguelDto)
         {
             var aluguel = new Aluguel()
             {
+                Id = aluguelDto.Id,
+                ClienteId = aluguelDto.ClienteId,
+                Aberto = aluguelDto.Aberto,
+                Status = aluguelDto.Status,
                 DataPedido = aluguelDto.DataPedido,
                 DataDevolucao = aluguelDto.DataDevolucao
             };
 
+            aluguelDto.AluguelItens.ForEach(aluguelItemDto => aluguel.AdicionarItem(Map(aluguelItemDto)));
+
             return aluguel;
         }
-
         public AluguelDto Map(Aluguel aluguel)
         {
             var aluguelDto = new AluguelDto()
             {
+                Id = aluguel.Id,
+                ClienteId = aluguel.ClienteId,
+                Aberto = aluguel.Aberto,
+                Status = aluguel.Status,
                 DataPedido = aluguel.DataPedido,
                 DataDevolucao = aluguel.DataDevolucao
             };
+
             return aluguelDto;
-        
+        }
+
+        public AluguelItem Map(AluguelItemDto aluguelItemDto)
+        {
+            var aluguelItem = new AluguelItem()
+            {
+                ItemId = aluguelItemDto.ItemId
+            };
+
+            return aluguelItem;
+        }
+
+        public AluguelItemDto Map(AluguelItem aluguelItem)
+        {
+            var aluguelItemDto = new AluguelItemDto()
+            {
+                AluguelId = aluguelItem.AluguelId,
+                ItemId = aluguelItem.ItemId
+            };
+
+            return aluguelItemDto;
         }
     }
 }

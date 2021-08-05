@@ -13,24 +13,19 @@ namespace Locadora.Dominio.Entidades
         {
         }
 
-        public void InserirNoEstoque(int quantidade)
+        public void RetirarDoEstoque()
         {
-            if (quantidade < 0)
-            {
-                throw new Exception("Quantidade da Midia no Estoque nao pode ser negativa.");
-            }
-
-            Quantidade = quantidade;
-        }
-
-        public void RetirarDoEstoque(int quantidade)
-        {
-            if(Quantidade - quantidade < 0)
+            if(Quantidade < 1)
             {
                 throw new Exception("Midia sem estoque.");
             }
 
             Quantidade--;
+        }
+
+        public void ReporNoEstoque()
+        {
+            Quantidade++;
         }
     }
 }

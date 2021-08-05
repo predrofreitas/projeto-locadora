@@ -71,7 +71,7 @@ namespace Locadora.WebAPI.Controllers
                 cadastrarCliente.Atualizar(cliente, id);
                 return Ok("Dados do Cliente Atualizado.");
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return StatusCode(500, "Erro ao atualizar cliente.");
             }

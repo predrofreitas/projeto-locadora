@@ -1,6 +1,5 @@
 ﻿using Locadora.Dominio.Entidades;
 using Locadora.Dominio.Interfaces;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Locadora.Dados.Repositorios
@@ -20,6 +19,13 @@ namespace Locadora.Dados.Repositorios
 
         public void Remover(Estoque estoque)
         {
+            _locadoraContext.Remove(estoque);
+            _locadoraContext.SaveChanges();
+        }
+
+        public void RemoverPorItemId(int itemId)
+        {
+            var estoque = _locadoraContext.Estoques.FirstOrDefault(x => x.ItemId == itemId);
             _locadoraContext.Remove(estoque);
             _locadoraContext.SaveChanges();
         }

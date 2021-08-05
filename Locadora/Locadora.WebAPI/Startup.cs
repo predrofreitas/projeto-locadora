@@ -31,6 +31,7 @@ namespace Locadora.WebAPI
             services.AddTransient<IRepositorioAluguel, RepositorioAluguel>();
             services.AddTransient<IRepositorioItem, RepositorioItem>();
             services.AddTransient<IRepositorioEstoque, RepositorioEstoque>();
+            services.AddTransient<IRepositorioAluguelItem, RepositorioAluguelItem>();
 
             services.AddScoped<UnitOfWork>();
             services.AddDbContext<LocadoraContext>(options =>

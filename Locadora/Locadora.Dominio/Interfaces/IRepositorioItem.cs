@@ -5,7 +5,7 @@ namespace Locadora.Dominio.Interfaces
 {
     public interface IRepositorioItem
     {
-        void Salvar(Item item);
+        int Salvar(Item item);
         void Remover(Item item);
         void Atualizar(Item item);
         Item BuscarPorId(int id);

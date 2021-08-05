@@ -6,6 +6,7 @@ namespace Locadora.Dominio.Interfaces
     {
         void Salvar(Estoque estoque);
         void Remover(Estoque estoque);
+        void RemoverPorItemId(int itemId);
         void Atualizar(Estoque estoque);
         Estoque BuscarPorId(int id);
         Estoque BuscarPorItemId(int itemId);
