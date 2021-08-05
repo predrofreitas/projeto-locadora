@@ -14,14 +14,15 @@ namespace Locadora.Dominio.Entidades
         public bool Ativo { get; set; }
         private readonly List<Aluguel> _alugueis;
         public IReadOnlyCollection<Aluguel> Alugueis => _alugueis;
-        public Endereco Endereco { get; set; }
-        public Cliente(string nome, DateTime dataNascimento, string cpf, string email, bool ativo)
+        public string Rua { get; set; }
+        public int Numero { get; set; }
+        public string Bairro { get; set; }
+        public string Cep { get; set; }
+        public string Cidade { get; set; }
+        public string Estado { get; set; }
+        
+        public Cliente()
         {
-            Nome = nome;
-            DataNascimento = dataNascimento;
-            Cpf = cpf;
-            Email = email;
-            Ativo = ativo;
             _alugueis = new List<Aluguel>();
         }
 

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Locadora.Dados.Repositorios;
 using Locadora.Dominio.Interfaces;
 using System;
+using RabbitMQ.Client;
 
 namespace Locadora.WebAPI
 {
@@ -28,19 +29,24 @@ namespace Locadora.WebAPI
             services.AddControllers();
             services.AddTransient<IRepositorioCliente, RepositorioCliente>();
             services.AddTransient<IRepositorioAluguel, RepositorioAluguel>();
-            services.AddTransient<IRepositorioMidia, RepositorioMidia>();
+            services.AddTransient<IRepositorioItem, RepositorioItem>();
 
             services.AddScoped<UnitOfWork>();
             services.AddDbContext<LocadoraContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("LocadoraContext"), sqlServerOptionsAction: sqlOptions =>
-               {
-                   sqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 10,
-                    maxRetryDelay: TimeSpan.FromSeconds(30),
-                    errorNumbersToAdd: null);
-               });
+                options.UseSqlServer(Configuration.GetConnectionString("LocadoraContext"));
             });
+            services.AddSingleton<IConnection>(x =>
+            {
+                var fabrica = new ConnectionFactory()
+                {
+                    HostName = "localhost",
+                    UserName = "guest",
+                    Password = "guest"
+                };
+                return fabrica.CreateConnection();
+            });
+            
 
             services.AddSwaggerGen(c =>
             {
@@ -48,7 +54,6 @@ namespace Locadora.WebAPI
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

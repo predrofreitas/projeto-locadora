@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Locadora.Dados.Migrations
 {
     [DbContext(typeof(LocadoraContext))]
-    [Migration("20210802233745_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210804052129_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,6 +47,28 @@ namespace Locadora.Dados.Migrations
                     b.ToTable("Aluguel");
                 });
 
+            modelBuilder.Entity("Locadora.Dominio.Entidades.AluguelItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AluguelId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AluguelId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("AluguelItem");
+                });
+
             modelBuilder.Entity("Locadora.Dominio.Entidades.Cliente", b =>
                 {
                     b.Property<int>("Id")
@@ -56,6 +78,15 @@ namespace Locadora.Dados.Migrations
 
                     b.Property<bool>("Ativo")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Bairro")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Cep")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Cidade")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Cpf")
                         .IsRequired()
@@ -69,26 +100,52 @@ namespace Locadora.Dados.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Estado")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(200)
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
+                    b.Property<int>("Numero")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Rua")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Cliente");
                 });
 
-            modelBuilder.Entity("Locadora.Dominio.Entidades.Midia", b =>
+            modelBuilder.Entity("Locadora.Dominio.Entidades.Estoque", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AluguelId")
+                    b.Property<int?>("ItemId")
                         .HasColumnType("int");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("Estoque");
+                });
+
+            modelBuilder.Entity("Locadora.Dominio.Entidades.Item", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Categoria")
                         .HasColumnType("nvarchar(max)");
@@ -102,30 +159,50 @@ namespace Locadora.Dados.Migrations
                     b.Property<float>("Preco")
                         .HasColumnType("real");
 
+                    b.Property<int>("TipoMidia")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AluguelId");
-
-                    b.ToTable("Midia");
+                    b.ToTable("Item");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Aluguel", b =>
                 {
-                    b.HasOne("Locadora.Dominio.Entidades.Cliente", null)
+                    b.HasOne("Locadora.Dominio.Entidades.Cliente", "Cliente")
                         .WithMany("Alugueis")
                         .HasForeignKey("ClienteId");
+
+                    b.Navigation("Cliente");
                 });
 
-            modelBuilder.Entity("Locadora.Dominio.Entidades.Midia", b =>
+            modelBuilder.Entity("Locadora.Dominio.Entidades.AluguelItem", b =>
                 {
-                    b.HasOne("Locadora.Dominio.Entidades.Aluguel", null)
-                        .WithMany("Midias")
+                    b.HasOne("Locadora.Dominio.Entidades.Aluguel", "Aluguel")
+                        .WithMany("AluguelItens")
                         .HasForeignKey("AluguelId");
+
+                    b.HasOne("Locadora.Dominio.Entidades.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.Navigation("Aluguel");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Locadora.Dominio.Entidades.Estoque", b =>
+                {
+                    b.HasOne("Locadora.Dominio.Entidades.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Aluguel", b =>
                 {
-                    b.Navigation("Midias");
+                    b.Navigation("AluguelItens");
                 });
 
             modelBuilder.Entity("Locadora.Dominio.Entidades.Cliente", b =>

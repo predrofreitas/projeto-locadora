@@ -7,9 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Locadora.WebAPI", "Locadora
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Locadora.MVC", "Locadora.MVC\Locadora.MVC.csproj", "{F6614125-B0E5-492C-B6D2-CB0CBF9D24E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locadora.Dados", "Locadora.Dados\Locadora.Dados.csproj", "{99D8377A-00F9-45FC-A7A1-DE141CA03987}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Locadora.Dados", "Locadora.Dados\Locadora.Dados.csproj", "{99D8377A-00F9-45FC-A7A1-DE141CA03987}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locadora.Dominio", "Locadora.Dominio\Locadora.Dominio.csproj", "{B5819410-E375-4598-8A6E-6468892BF9D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Locadora.Dominio", "Locadora.Dominio\Locadora.Dominio.csproj", "{B5819410-E375-4598-8A6E-6468892BF9D1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessarSolicitacaoAluguel", "ProcessarSolicitacaoAluguel\ProcessarSolicitacaoAluguel.csproj", "{E644D1E5-C8DF-4847-B42B-830786567B0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locadora.Comuns", "Locadora.Comuns\Locadora.Comuns.csproj", "{7937CC3C-8A20-4C67-AC30-376A92F90400}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{B5819410-E375-4598-8A6E-6468892BF9D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5819410-E375-4598-8A6E-6468892BF9D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5819410-E375-4598-8A6E-6468892BF9D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E644D1E5-C8DF-4847-B42B-830786567B0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E644D1E5-C8DF-4847-B42B-830786567B0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E644D1E5-C8DF-4847-B42B-830786567B0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E644D1E5-C8DF-4847-B42B-830786567B0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7937CC3C-8A20-4C67-AC30-376A92F90400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7937CC3C-8A20-4C67-AC30-376A92F90400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7937CC3C-8A20-4C67-AC30-376A92F90400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7937CC3C-8A20-4C67-AC30-376A92F90400}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

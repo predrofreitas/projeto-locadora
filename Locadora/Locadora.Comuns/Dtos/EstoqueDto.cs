@@ -1,8 +1,8 @@
-﻿namespace Locadora.WebAPI.Dtos
+﻿namespace Locadora.Comuns.Dtos
 {
     public class EstoqueDto
     {
-        public MidiaDto Midia { get; set; }
+        public ItemDto Item { get; set; }
         public int Quantidade { get; set; }
     }
 }
