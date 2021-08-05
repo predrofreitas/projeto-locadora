@@ -39,8 +39,8 @@ namespace Locadora.WebAPI.Controllers
             try
             {
                 var cadastrarItem = new CadastrarItemHandler(_locadoraContext, _repositorioItem, _repositorioEstoque, _rabbitConnection);
-                cadastrarItem.Criar(itemDto);
-                return CreatedAtAction(nameof(CriarItem), Guid.NewGuid());
+                var dto = cadastrarItem.Criar(itemDto);
+                return CreatedAtAction(nameof(CriarItem), dto);
             }
             catch (Exception ex)
             {

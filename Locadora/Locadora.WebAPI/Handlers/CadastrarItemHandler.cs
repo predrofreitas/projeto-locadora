@@ -29,36 +29,19 @@ namespace Locadora.WebAPI.Handlers
             _repositorioEstoque = repositorioEstoque;
         }
 
-        public int Criar(ItemDto itemDto)
+        public ItemDto Criar(ItemDto itemDto)
         {
             var item = Map(itemDto);
-            int itemId = 0;
 
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
+                itemDto.Id = _repositorioItem.Salvar(item);
                 _repositorioEstoque.Salvar(new Estoque { Quantidade = 3, Item = item });
                 _locadoraContext.SaveChanges();
                 transacao.Commit();
             }
 
-            //using (var canal = _rabbitConnection.CreateModel())
-            //{
-            //    canal.QueueDeclare(queue: "qu.solicitacao.cadastro.item",
-            //                        durable: false,
-            //                        exclusive: false,
-            //                        autoDelete: false,
-            //                        arguments: null);
-
-
-            //    string mensagem = JsonSerializer.Serialize(itemDto);
-            //    var corpo = Encoding.UTF8.GetBytes(mensagem);
-            //    canal.BasicPublish(exchange: "",
-            //                        routingKey: "qu.solicitacao.cadastro.item",
-            //                        basicProperties: null,
-            //                        body: corpo);
-            //}
-
-            return itemId;
+            return itemDto;
         }
 
         public void Atualizar(ItemDto itemDto, int id)
@@ -136,6 +119,7 @@ namespace Locadora.WebAPI.Handlers
         {
             var itemDto = new ItemDto()
             {
+                Id = item.Id,
                 Nome = item.Nome,
                 Descricao = item.Descricao,
                 TipoMidia = item.TipoMidia,
