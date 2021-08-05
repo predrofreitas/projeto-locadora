@@ -6,15 +6,16 @@
                     "menu-lateral corpo " 1fr / 200px 1fr;
  }
 
- .header-layout{
-     grid-area: header;
-     background-image: linear-gradient(darkblue  40% , rgb(1, 192, 255) );
-     color: white;
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-     padding: 0 20px;
- }
+.header-layout {
+    grid-area: header;
+    background-image: linear-gradient(darkblue 40%, rgb(1, 192, 255) );
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    min-height: 98vh;
+}
  .header-layout span{
      display: flex;
      font-size: 40px;
