@@ -17,4 +17,9 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Locadora.Comuns\Locadora.Comuns.csproj" />
+    <ProjectReference Include="..\Locadora.Dominio\Locadora.Dominio.csproj" />
+  </ItemGroup>
+
 </Project>

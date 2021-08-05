@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Locadora.MVC.Services;
+using System;
 
 namespace Locadora.MVC
 {
@@ -19,6 +21,12 @@ namespace Locadora.MVC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddHttpClient("api-cliente" , c=> 
+                c.BaseAddress = new Uri("https://api-blog.lucasmirandaadv.com/api/blog/")
+            );
+
+         // services.AddTransient<IClienteService,ClienteService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
