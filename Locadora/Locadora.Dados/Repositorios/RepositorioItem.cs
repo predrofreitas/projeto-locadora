@@ -13,9 +13,11 @@ namespace Locadora.Dados.Repositorios
         {
             _locadoraContext = locadoraContext;
         }
-        public void Salvar(Item item)
+        public int Salvar(Item item)
         {
             _locadoraContext.Add(item);
+
+            return item.Id;
         }
 
         public void Remover(Item item)

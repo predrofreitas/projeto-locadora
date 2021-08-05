@@ -3,7 +3,7 @@
     public class AluguelItemDto
     {
         public int Id { get; set; }
-        public AluguelDto Aluguel { get; set; }
-        public ItemDto Item { get; set; }
+        public int AluguelId { get; set; }
+        public int ItemId { get; set; }
     }
 }

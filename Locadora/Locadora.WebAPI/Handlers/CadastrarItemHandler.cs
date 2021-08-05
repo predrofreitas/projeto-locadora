@@ -15,52 +15,59 @@ namespace Locadora.WebAPI.Handlers
     {
         private readonly LocadoraContext _locadoraContext;
         private readonly IRepositorioItem _repositorioItem;
+        private readonly IRepositorioEstoque _repositorioEstoque;
         private readonly IConnection _rabbitConnection;
 
         public CadastrarItemHandler(LocadoraContext locadoraContext,
             IRepositorioItem repositorioItem,
+            IRepositorioEstoque repositorioEstoque,
             IConnection rabbitConnection)
         {
             _locadoraContext = locadoraContext;
             _repositorioItem = repositorioItem;
             _rabbitConnection = rabbitConnection;
+            _repositorioEstoque = repositorioEstoque;
         }
 
-        public void Criar(ItemDto itemDto)
+        public int Criar(ItemDto itemDto)
         {
             var item = Map(itemDto);
+            int itemId = 0;
 
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
-                _repositorioItem.Salvar(item);
+                _repositorioEstoque.Salvar(new Estoque { Quantidade = 3, Item = item });
                 _locadoraContext.SaveChanges();
                 transacao.Commit();
             }
 
-            using (var canal = _rabbitConnection.CreateModel())
-            {
-                canal.QueueDeclare(queue: "qu.solicitacao.cadastro.item",
-                                    durable: false,
-                                    exclusive: false,
-                                    autoDelete: false,
-                                    arguments: null);
+            //using (var canal = _rabbitConnection.CreateModel())
+            //{
+            //    canal.QueueDeclare(queue: "qu.solicitacao.cadastro.item",
+            //                        durable: false,
+            //                        exclusive: false,
+            //                        autoDelete: false,
+            //                        arguments: null);
 
 
-                string mensagem = JsonSerializer.Serialize(itemDto);
-                var corpo = Encoding.UTF8.GetBytes(mensagem);
-                canal.BasicPublish(exchange: "",
-                                    routingKey: "qu.solicitacao.cadastro.item",
-                                    basicProperties: null,
-                                    body: corpo);
-            }
+            //    string mensagem = JsonSerializer.Serialize(itemDto);
+            //    var corpo = Encoding.UTF8.GetBytes(mensagem);
+            //    canal.BasicPublish(exchange: "",
+            //                        routingKey: "qu.solicitacao.cadastro.item",
+            //                        basicProperties: null,
+            //                        body: corpo);
+            //}
+
+            return itemId;
         }
 
-        public void Atualizar(ItemDto itemDto)
+        public void Atualizar(ItemDto itemDto, int id)
         {
             var item = Map(itemDto);
 
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
+                item.Id = id;
                 _repositorioItem.Atualizar(item);
                 _locadoraContext.SaveChanges();
                 transacao.Commit();
@@ -73,6 +80,7 @@ namespace Locadora.WebAPI.Handlers
 
             using (var transacao = _locadoraContext.Database.BeginTransaction())
             {
+                _repositorioEstoque.RemoverPorItemId(id);
                 _repositorioItem.Remover(item);
                 _locadoraContext.SaveChanges();
                 transacao.Commit();
