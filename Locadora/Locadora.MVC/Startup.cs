@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,10 @@ namespace Locadora.MVC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddHttpClient();
+            services.AddHttpClient("api", c=>
+            {
+                c.BaseAddress = new Uri("https://localhost:5001/");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

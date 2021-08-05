@@ -62,7 +62,7 @@ namespace Locadora.WebAPI
                 j.SaveToken = true;
                 j.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuerSigningKey = true,
+                    ValidateIssuerSigningKey = false,
                     IssuerSigningKey = new SymmetricSecurityKey(chave),
                     ValidateIssuer = false,
                     ValidateAudience = false

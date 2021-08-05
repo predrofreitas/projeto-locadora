@@ -8,6 +8,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text;
 
 namespace Locadora.MVC.Controllers
 {
@@ -25,17 +28,27 @@ namespace Locadora.MVC.Controllers
 
         public async Task<IActionResult> IndexAsync()
         {
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Add("Authorization",
-                "Bearer" + "xxxx");
 
-            var response = await httpClient.PostAsJsonAsync("https://localhost:5003",
+            var httpClient = _httpClientFactory.CreateClient("api");
+            string bearer = "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlBlZHJvIiwiZW1haWwiOiJwZWRyb0BjdXJzby5jb20iLCJuYmYiOjE2MjgxOTA0NDQsImV4cCI6MTYyODE5NDA0NCwiaWF0IjoxNjI4MTkwNDQ0fQ.eML0OC6RSpnORt7NXEyUqFSLnY7Iy-XKOxg7CuI9USE";
+
+            httpClient.DefaultRequestHeaders.Add("Authorization",
+                "Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlBlZHJvIiwiZW1haWwiOiJwZWRyb0BjdXJzby5jb20iLCJuYmYiOjE2MjgxOTA0NDQsImV4cCI6MTYyODE5NDA0NCwiaWF0IjoxNjI4MTkwNDQ0fQ.eML0OC6RSpnORt7NXEyUqFSLnY7Iy-XKOxg7CuI9USE");
+
+            var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                "Cliente");
+
+
+            using var response = await httpClient.PostAsJsonAsync(
+                "Cliente",
                 new ClienteDto()
                 {
-                    Cpf = "12345678901",
-                    Nome = "Filipe",
-                    DataNascimento = DateTime.Today
+                    Email = "mallu@curso.com",
+                    Nome = "Mallu",
+                    Senha = "999"
                 });
+
 
             return View();
         }

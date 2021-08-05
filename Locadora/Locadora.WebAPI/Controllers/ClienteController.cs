@@ -10,9 +10,9 @@ using System;
 
 namespace Locadora.WebAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
-    //[Authorize]
     public class ClienteController : ControllerBase
     {
         private readonly ILogger<ClienteController> _logger;
