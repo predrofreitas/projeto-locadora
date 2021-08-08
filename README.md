@@ -10,12 +10,12 @@
 Criação de um sistema para suportar demanda de serviços de uma videolocadora que permite solicitações de reserva remotas.
 
 ### Componentes do squad
-- [Filipe Braga] (https://github.com/filipembraga)
-- [Gabrielle de Oliveira] (https://github.com/GabrielleDorneles)
-- [Jhonatas Felipe] (https://github.com/jhonatasFelipe)
-- [Mallu Ferreira] (https://github.com/malluqf)
-- [Pedro Freitas] (https://github.com/predrofreitas)
-- [Weiden Mendes] (https://github.com/weidenm) 
+- [Filipe Braga](https://github.com/filipembraga)
+- [Gabrielle de Oliveira](https://github.com/GabrielleDorneles)
+- [Jhonatas Felipe](https://github.com/jhonatasFelipe)
+- [Mallu Ferreira](https://github.com/malluqf)
+- [Pedro Freitas](https://github.com/predrofreitas)
+- [Weiden Mendes](https://github.com/weidenm) 
 
 ### Tecnologias utilizadas
 - .NET Core 5
